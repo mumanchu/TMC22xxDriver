@@ -11,8 +11,8 @@ The library does not do the STEP/DIR control. That is done by a separate `MiniSt
 ## Contents
 - [Introduction](#introduction)
 - [Advantages of This Library](#advantages)
-- [TMC2209 Modules](#tmc2209-modules)
-- [Recommended 3D Printer or MCU Boards](#recommended-boards)
+- [TMC22xx Modules](#tmc22xx-modules)
+- [Recommended 3D Printer and MCU Boards](#recommended-boards)
 - [Library API](#api)
 - [Example Sketch](#example-sketch)
 - [Notes About the Code](#notes)
@@ -34,7 +34,7 @@ The library does not do the STEP/DIR control. That is done by a separate `MiniSt
 
 Some of the best stepper motor controller chips were developed by 'TRINAMIC Motion Control Gmbh', which has now been absorbed by 'Analog Devices Inc' to become the 'ADI Trinamic™' range. These intelligent TMC chips have a fast serial interface (UART up to 500K bits-per-second) for configuration and monitoring. The chips also have the standard STEP, DIR and ENABLE signals for traditional stepper motor control.
 
-The Trinamic range has several unique features: _StealthChop™_ and _MicroPlyer™_ for quiet motor operation; _SpreadCycle™_ for dynamic motor control using a "voltage chopper"; _StallGuard™_ for current load and stall detection; and _CoolStep™_ for current control with up to 75% energy savings. You can find out all about these features from the data sheet.
+The Trinamic range has several unique features: _StealthChop™_ and _MicroPlyer™_ for quiet motor operation; _SpreadCycle™_ for dynamic motor control using a "voltage chopper"; _StallGuard™_ for current load and stall detection; and _CoolStep™_ for current control with up to 75% energy savings. You can find out all about these features from the [Data Sheet](#data-sheets).
 
 The TMC2202/8/9 and TMC2224/5/6 are all the same apart from the packaging, pinouts, voltage and current ratings. There is a TMC2130 which is similar but uses SPI communications instead for UART. (This library can easily use SPI by modifying `setRegister()` and `getRegister()` to use SPI instead of UART, maybe I'll add that later...)
 
@@ -50,19 +50,19 @@ https://muman.ch/muman/index.htm?muman-stepper-motor-control.htm -->
 <a name="advantages"></a>
 ## Advantages of This Library 
 
-There are already many TMC2209 libraries for Arduinos. So just to confuse you, I've released another one.
+There are already many TMC2209 libraries for Arduinos. So just to confuse you, we've released another one.
 
 This one is part of a Stepper Motor Control Library suite which is being released in stages. `MultiTimerSAMD` and `OptimizedGPIO` are already available. Next will be the `MiniStepper` library for STEP/DIR control (but until then you can use any of the many STEP/DIR libraries).
 
 In addition:
-- This library supports _all_ the TMC chip's features
-- Has useful comments in the source code to help understand each method, although you'll still need to read the 80-page data sheet :-( 
+- This library supports _all_ the TMC chip's features (most libraries do not).
+- It has useful comments in the source code to help understand each method, although you'll still need to read the 80-page data sheet :-( 
 - Detects and reports communications errors, with an error count. This is useful in "noisy" environments where high currents are being switched. 
-- Uses the chip's received message counter `IFCOUNT` to validate communications (this has not been implemented in any other libraries) 
-- Fast look-up table CRC calculation and byte reversal using `__asm__` instructions
-- Provides commissioning routines for RMS current calculations based on algorithms in the data sheet
-- Works together with the `MiniStepper` library, and should work with any other STEP/DIR library
-- Supports [One Time Programming (OTP)](#otp), but it's patched out for safety because it can only be programmed once
+- Uses the chip's received message counter `IFCOUNT` to validate communications. This has not been implemented in any other libraries.
+- Fast look-up table CRC calculation and byte reversal using `__asm__` instructions.
+- Provides commissioning routines for RMS current calculations based on algorithms in the data sheet.
+- Works together with the `MiniStepper` library, and should work with any other STEP/DIR library.
+- Supports [One Time Programming (OTP)](#otp) (but it's patched out for safety because it can only be programmed once).
 - Additional `DEBUG` mode validation:
 	- detects writes to read-only registers and reads of write-only registers
 	- read-after-write validation of read/write registers
@@ -70,8 +70,8 @@ In addition:
 
 <!-- ========================================================================================== -->
 
-<a name="tmc2209-modules"></a>
-## TMC2209 Modules
+<a name="tmc22xx-modules"></a>
+## TMC22xx Modules
 
 If you're not using a 3D printer board, then you'll need a TMC-based driver module.... 
 
@@ -82,7 +82,7 @@ If you're not using a 3D printer board, then you'll need a TMC-based driver modu
 
 
 <a name="recommended-boards"></a>
-## Recommended 3D Printer or MCU Boards
+## Recommended 3D Printer and MCU Boards
 
 The library code runs on all architectures, SAMD, AVR, STM32, ESP32 and ESP8266, but 32-bit MCUs are recommended.
 
@@ -96,7 +96,7 @@ I recommend the 'Bigtreetech SKR Mini E3 V3.0' 3D printer board. This board has 
 
 **BIGTREETECH SKR MINI E3 V3.0** \
 https://github.com/bigtreetech/BIGTREETECH-SKR-mini-E3
-[Schematic](https://github.com/bigtreetech/BIGTREETECH-SKR-mini-E3/blob/master/hardware/BTT%20SKR%20MINI%20E3%20V3.0.1/Hardware/BTT%20E3%20SKR%20MINI%20V3.0.1_SCH..pdf)
+[Schematic V3.0.1](https://github.com/bigtreetech/BIGTREETECH-SKR-mini-E3/blob/master/hardware/BTT%20SKR%20MINI%20E3%20V3.0.1/Hardware/BTT%20E3%20SKR%20MINI%20V3.0.1_SCH..pdf)
 
 TODO picture
 
@@ -104,11 +104,11 @@ TODO picture
 The best MCU board is probably one of the Nucleo-64 STM32 "evaluation boards", like the STM32F446RE. These have a lot of GPIOs, connected to over 100 I/O pins! The STM32F446 board runs at 180MHz, has 512KB Flash, 128KB RAM, floating point FPU and built-in ST-LINK debugging. Available everywhere and it costs less than $20! But no onboard sensors, WiFi, Bluetooth, EEPROM, etc.
 
 **Nucleo-64 STM32F446RE** \
-[https://www.st.com/en/evaluation-tools/nucleo-f446re.html](https://www.st.com/en/evaluation-tools/nucleo-f446re.html)
+https://www.st.com/en/evaluation-tools/nucleo-f446re.html
 
 
+TODO picture in \assets
 
-TODO picture
 
  
 <!-- ========================================================================================== -->
@@ -116,7 +116,7 @@ TODO picture
 <a name="api"></a>
 ## Library API
 
-The library contains many methods. Only the first two are described here. Refer to the source code and data sheet for detailed descriptions of the others.
+The library contains many methods. Only the first two, `begin()` and `setConfiguration()`, are described here. Refer to the commented [source code]() and [Data Sheet](#data-sheets) for detailed descriptions of the other methods.
 
 ```cpp
 class TMC22xxDriver
@@ -209,15 +209,15 @@ Chip address 0..3 from MS1/MS2 wiring
 <a name="notes"></a>
 ## Notes About the Code
 
-The library is in a single include file that contains both the `TMC22xxDriver` class definition and the code. This is fine if you want to use it in only one source file (.cpp or .ino) - which is recommended. But it won't work if you want to access the class from more than one source file. In that case, put the code into a separate '.cpp' file to be linked only once, keeping the class definition in the include file.
+The library is in a single include file that contains both the `TMC22xxDriver` class definition and the code. This is fine if you want to use it from only _one_ source file (.cpp or .ino) - which is recommended. But it won't work if you want to access the class from more than one source file. In that case, cut-and-paste the _code_ part into a separate '.cpp' file to be linked only once, leaving the class definition in the include file.
 
 For a bit of variety, 'get' and 'set' are used instead of 'read' and 'write', e.g. `getRegister()` and `setRegister()`. This is like C#'s getters and setters.
 
 The code assumes `byte` and `char` is a byte (8 bits), `int` is 16 ***or*** 32 bits (the library code works for both), `short` is always 16 bits, and `long` is always 32 bits. This is true for all MCUs. Because of this, `int8_t`, `int16_t` or `int32_t` (etc.) are not used unless it is to emphasize the number of bits.
 
-`uint` and `ulong` are also used. You may have to `typedef` those if they are not defined for your platform:
+`ushort`, `uint` and `ulong` are also used (System V compatibility). You may have to `typedef` these if they are not defined in `types.h` for your platform:
 ```cpp
-typedef unsigned char byte;
+typedef unsigned short ushort;
 typedef unsigned int uint;
 typedef unsigned long ulong;
 ```
@@ -383,7 +383,8 @@ TODO
 
 <!-- ========================================================================================== -->
 
-<a name="microstepping"></a>## Microstepping
+<a name="microstepping"></a>
+## Microstepping
 
 This often causes some confusion...
 
@@ -427,16 +428,18 @@ INDEX PULSES
 <a name="stall-detection"></a>
 ## Stall Detection
 
-The TMC chips measure the current through the motor's two coils. They are able to use this to detect if the motor has "stalled" because the current increases if the motor is unable to turn.
+The TMC chips measure the current through the motor's two coils. They are able to use this to detect if the motor has "stalled" because the current through the coils increases if the motor is unable to turn.
 
-In theory, you could use this instead of having end-stop switches. But I spent a lot of time playing with this, and it does not seem to work well at low speeds. So switches are still needed. But stall detection could still be used as a fail-safe in case the low-tech mechanical switch fails.
+In theory, you could use this instead of having end-stop switches. But I spent a lot of time playing with this, and it does not seem to work well at low speeds if the motor is close to the end stop when the movment begins. So switches are still needed. But stall detection can still be used as a fail-safe in case the low-tech mechanical switch fails.
+
 
 TODO configuration
 
-TODO diag pin interrupt
-diag output was not cleared... ?
 
 TODO DIAG bit can be polled no need for DAIG pin connection
+DIAG pin is not cleared, don't use it, p69 
+TODO >>> StallDetection (gated by TPWMTHRS<=TSTEP<=TCOOLTHRS) 
+
 
 
 
