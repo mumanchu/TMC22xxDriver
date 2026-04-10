@@ -10,7 +10,7 @@ The library does not do the STEP/DIR control. That is done by a separate `MiniSt
 
 ## Contents
 - [Introduction](#introduction)
-- [Advantages of this Library](#advantages)
+- [Advantages of This Library](#advantages)
 - [TMC2209 Modules](#tmc2209-modules)
 - [Recommended 3D Printer or MCU Boards](#recommended-boards)
 - [Library API](#api)
@@ -48,7 +48,7 @@ https://muman.ch/muman/index.htm?muman-stepper-motor-control.htm -->
 <!-- ========================================================================================== -->
 
 <a name="advantages"></a>
-## Advantages of this Library 
+## Advantages of This Library 
 
 There are already many TMC2209 libraries for Arduinos. So just to confuse you, I've released another one.
 
