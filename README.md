@@ -1,5 +1,5 @@
 # TMC22xxDriver Library
-An advanced TCM22xx Stepper Motor Controller Library, from $${\color{green}mumanchu}$$
+An advanced TCM22xx Stepper Motor Controller Library, another library from $${\color{green}mumanchu}$$.
 
 This library is for configuring and monitoring the TRINAMIC TMC22xx range of intelligent Stepper Motor Controller chips via the single-wire UART interface. This includes the TMC2202/2208/2209 and TMC2224/2225/2226. It runs on all STM32, SAMD, AVR, ESP32 and ESP8266 boards, but 32-bit boards are recommended.
 
@@ -36,9 +36,9 @@ Some of the best stepper motor controller chips were developed by 'TRINAMIC Moti
 
 The Trinamic range has several unique features: _StealthChop™_ and _MicroPlyer™_ for quiet motor operation; _SpreadCycle™_ for dynamic motor control using a "voltage chopper"; _StallGuard™_ for current load and stall detection; and _CoolStep™_ for current control with up to 75% energy savings. You can find out all about these features from the data sheet.
 
-I think the TMC2202/8/9 and TMC2224/5/6 are all the same apart from the packaging, pinouts, voltage and current ratings. There is a TMC2130 which is similar but uses SPI communications instead for UART. (Thsi library can easily use SPI by changing `setRegister()` and `getRegister()` to use SPI instead of UART, maybe I'll add that later...)
+The TMC2202/8/9 and TMC2224/5/6 are all the same apart from the packaging, pinouts, voltage and current ratings. There is a TMC2130 which is similar but uses SPI communications instead for UART. (This library can easily use SPI by modifying `setRegister()` and `getRegister()` to use SPI instead of UART, maybe I'll add that later...)
 
-I have several 3D printer controller boards that use Trinamic chips, and they _all_ use the TMC2209. I've not seen a board that uses the other versions. Some are stand-along controller modules are advertised, but does anybody buy them?
+I have several 3D printer controller boards that use Trinamic chips, and they _all_ use the TMC2209. I've not seen a board that uses the other versions. Some stand-alone controller modules which use the other chips are advertised, but does anybody buy them?
 
 <!-- If you need to learn about stepper motors, check out this voluminous blog entry:
 https://muman.ch/muman/index.htm?muman-stepper-motor-control.htm -->
@@ -52,7 +52,7 @@ https://muman.ch/muman/index.htm?muman-stepper-motor-control.htm -->
 
 There are already many TMC2209 libraries for Arduinos. So just to confuse you, I've released another one.
 
-This one is part of a Stepper Motor Control Library suite which is being released in stages. `MultiTimerSAMD` and `OptimizedGPIO` are already available. Next will be the `MiniStepper` library for STEP/DIR control (but until then you can use any of the STEP/DIR libraries).
+This one is part of a Stepper Motor Control Library suite which is being released in stages. `MultiTimerSAMD` and `OptimizedGPIO` are already available. Next will be the `MiniStepper` library for STEP/DIR control (but until then you can use any of the many STEP/DIR libraries).
 
 In addition:
 - This library supports _all_ the TMC chip's features
@@ -86,16 +86,16 @@ If you're not using a 3D printer board, then you'll need a TMC-based driver modu
 
 The library code runs on all architectures, SAMD, AVR, STM32, ESP32 and ESP8266, but 32-bit MCUs are recommended.
 
-It can be used with old (or new) 3D printer boards that have an ICSP connector. Many 3D printer boards use TMC2209 chips, but not all have the UART connections, and some have only TX connected. The ICSP connector (In Circuit Serial Programming) is needed to download the program, and you'll need a suitable USB-to-ICSP adapter like the Atmel-ICE or ST-LINK box. 
+Old (or new) 3D printer boards with an ICSP connector can be easily programmed. Many 3D printer boards use TMC2209 chips, but not all have the UART connections, and some have only TX connected. The ICSP connector (In Circuit Serial Programming) is needed to download the program, and you'll need a suitable USB-to-ICSP adapter like the Atmel-ICE or ST-LINK box. 
 
-However, debugging is rarely possible on 3D printer boards because few have the SWD (Serial Wire Debug) or JTAG connectors. So debugging and testing was done with an Arduino Zero (built-in EDGB debugger) and a Nucleo-64 STM32 board (onboard ST-LINK debugger). A [Prototype Shield](#prototype-shield) was made for the tests.
+However, debugging is rarely possible on 3D printer boards because few have the SWD (Serial Wire Debug) or JTAG connectors. So debugging and testing was first done with an Arduino Zero (built-in EDGB debugger) and a Nucleo-64 STM32 board (onboard ST-LINK debugger). A [Prototype Shield](#prototype-shield) was made for the tests. (The Arduino Zero can only support ONE stepper motor because it doesn't have enough outputs.)
 
-If not using a 3D printer board, use a microcontroller board with enough GPIOs to control the number of stepper motors you want. Each motor uses at least 3 pins (DIR, STEP and EN). For 4 motor's you will need (at least) 12 outputs, so something more than an Arduino-style board is required. Up to 4 TMC chips can share the same UART connections because the UART protocol contains the "node address" 0..3.
+If not using a 3D printer board, use a microcontroller board with enough outputs to control the number of stepper motors you will use. Each motor uses at least 3 pins (DIR, STEP and EN). For 4 motor's you will need (at least) 12 outputs, so something more than an Arduino-style board is required. Up to 4 TMC chips can share the same UART connections because the UART protocol contains the "node address" 0..3.
 
-I recommend the 'Bigtreetech SKR Mini E3' 3D printer board. This board has a nice STM32F401RCT6 ARM MCU, SWD debug connector, extra EEPROM memory, SD card, end stop inputs, high current MOSFET switched outputs, thermister inputs, etc. It is cheaper than an Arduino and has many more features! It costs around $30.
+I recommend the 'Bigtreetech SKR Mini E3 V3.0' 3D printer board. This board has a nice STM32F401RCT6 ARM MCU, SWD debug connector, extra EEPROM memory, SD card, end stop inputs, high current MOSFET switched outputs, thermister inputs, etc. It is cheaper than an Arduino and has many more features! It costs around $30, but _rip-off_ prices can be more than double that!
 
 **BIGTREETECH SKR MINI E3 V3.0** \
-[https://github.com/bigtreetech/BIGTREETECH-SKR-mini-E3](https://github.com/bigtreetech/BIGTREETECH-SKR-mini-E3)
+https://github.com/bigtreetech/BIGTREETECH-SKR-mini-E3
 [Schematic](https://github.com/bigtreetech/BIGTREETECH-SKR-mini-E3/blob/master/hardware/BTT%20SKR%20MINI%20E3%20V3.0.1/Hardware/BTT%20E3%20SKR%20MINI%20V3.0.1_SCH..pdf)
 
 TODO picture
@@ -215,7 +215,7 @@ For a bit of variety, 'get' and 'set' are used instead of 'read' and 'write', e.
 
 The code assumes `byte` and `char` is a byte (8 bits), `int` is 16 ***or*** 32 bits (the library code works for both), `short` is always 16 bits, and `long` is always 32 bits. This is true for all MCUs. Because of this, `int8_t`, `int16_t` or `int32_t` (etc.) are not used unless it is to emphasize the number of bits.
 
-`uint` and `ulong` are also used. You may have to `typedef` those if they are not defined for your platform: \
+`uint` and `ulong` are also used. You may have to `typedef` those if they are not defined for your platform:
 ```cpp
 typedef unsigned char byte;
 typedef unsigned int uint;
@@ -226,11 +226,11 @@ The contents of the TMC22xx chip's registers are defined with `struct` and `unio
  
 To save reading a register before modifying it, the library uses _shadow registers_ to hold the value last written to certain registers. This is managed automatically by code in `setRegister()`.
 
-For the STM32, assembly language instructions `__asm__` are used to speed up CRC calculation and byte reversal in `crc8()` and `reverse4bytes()`. If not using an STM32, then normal C code is used. (But this will be improved in a future release.)
+For the STM32, assembly language instructions `__asm__` are used to speed up CRC calculation and byte reversal in `crc8()` and `reverse4bytes()`. If not using an STM32, then normal C code is used. (But this will be extended to other MCUs in a future release.)
 
-If `DEBUG` is defined, the code does additional checks to ensure read-only registers are not written to and write-only registers are not read. It can also verify writes to readable registers by doing a write-read-and-compare, but only if the chip's TX pin is connected.
+If `DEBUG` is defined, the code does additional checks to ensure read-only registers are not written to and write-only registers are not read. It can also verify writes to readable registers by doing a write-read-and-compare, but only if the chip's TX pin is connected. This detects a lot of mistakes if you are making changes to the library.
 
-If both RX and TX are connected, it will also validate the loopback message, since everything sent is also received (and usually discarded). This detects bad connections or noise on the TX/RX lines. If RX is not connected, patch out the `TMC22xxDRIVER_HAS_ECHO` definition to disable this test.
+If both RX and TX are connected, it also validates the loopback message, since everything sent is also received (and discarded). This will detect bad connections or noise on the TX/RX lines. If RX is not connected, patch out the `TMC22xxDRIVER_HAS_ECHO` definition to disable this test.
 
 
 TODO choose a better name for `TMC22xxDRIVER_HAS_ECHO`
@@ -383,8 +383,7 @@ TODO
 
 <!-- ========================================================================================== -->
 
-<a name="microstepping"></a>
-## Microstepping
+<a name="microstepping"></a>## Microstepping
 
 This often causes some confusion...
 
@@ -402,6 +401,9 @@ BUT the torque decreases as the number of microsteps increases. At 16 microsteps
 
 _"The consequence is that if the load torque plus the motor’s friction and detent torque is greater than the incremental torque of a microstep, successive microsteps will have to be realized until the accumulated torque exceeds the load torque plus the motor’s friction and detent torque. Simply stated, taking a microstep does not mean the motor will actually move!"_
 https://www.faulhaber.com/fileadmin/Import/Media/AN015_EN.pdf
+or
+https://github.com/mumanchu/mumanchu/tree/main/assets/AN015_EN.pdf
+
 
 This means that it's usually better to gear down the movement using a lead screw or pulley ratio and use fullsteps instead of microsteps.
 However, microsteps are very useful for smooth running, especially if you always step until the full step position is reached. In fact, the Trinamic TMC series controllers do this automatically, dividing each full step into 256 microsteps. This is called _MicroPlyer™_ and it's what makes these controllers "silent". 
@@ -427,14 +429,14 @@ INDEX PULSES
 
 The TMC chips measure the current through the motor's two coils. They are able to use this to detect if the motor has "stalled" because the current increases if the motor is unable to turn.
 
-In theory, you could use this instead of having end-stop switches. But I spent a lot of time playing with this, and it does not seem to work well at very low speeds. So switches are still needed. But stall detection could still be used in case the switch fails.
+In theory, you could use this instead of having end-stop switches. But I spent a lot of time playing with this, and it does not seem to work well at low speeds. So switches are still needed. But stall detection could still be used as a fail-safe in case the low-tech mechanical switch fails.
 
 TODO configuration
 
 TODO diag pin interrupt
 diag output was not cleared... ?
 
-TODO DIAG bit can be polled 
+TODO DIAG bit can be polled no need for DAIG pin connection
 
 
 
@@ -443,17 +445,19 @@ TODO DIAG bit can be polled
 <a name="otp"></a>
 ## One Time Programming (OTP), p26
 
-One Time Programming is only needed if the chip cannot be configured via the UART. If the UART is not connected, then the default configuration can be programmed into the chip, to be restored on power-up. 
+_One Time Programming_ is only needed if the chip cannot be configured via the UART. If the UART is not connected, then the default configuration can be programmed into the chip, to be restored on power-up. 
 
-OTP memory can be programmed only once. Bits can be programmed to a `1`, but not back to a `0`.
+OTP memory can be programmed only once. Bits can be programmed from `0` to `1`, but not back to a `0`.
 
-All the TMC Controller boards have the UART connection, so there is no reason to use the OTP feature. Some 3D Printer or CNC boards have not connected the UART pin, in this case they may use the OTP configuration to work with the product's motors, but it's hard to tell.
+All the TMC Controller modules have the UART connection, so there is no reason to use the OTP feature. But many of the 3D Printer or CNC boards do _not_ connect the UART pin. In this case they _may_ use the OTP configuration to work with the product's motors, but it's hard to tell. I suspect thye just use the default "all zeros" configuration.
 
 The OTP register data which is restored on power-up can be read from the `OTP_READ` register using `getOTP_READ()`. The default (unprogrammed) value is 0x000000 (24 bits).
 
 If you do want to do One Time Programming, enable the `programOTP()` method in the library. This is patched out with `$if 0` for safety, in case it is called by mistake.
 
-***The factory-set clock frequency tuning `FCLKTRIM` cannot (and should not) be changed!***
+> [!CAUTION]
+> **The factory-set clock frequency tuning `FCLKTRIM` should not be changed!**
+> `programOTP()` does not allow this.
 
 
 
@@ -470,31 +474,32 @@ https://github.com/mumanchu/mumanchu/tree/main/assets/TMC2209_datasheet_rev1.09.
 
 
 All page numbers mentioned in the code (e.g. p20), refer to _this_ TMC2209 data sheet \
-[https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2209_datasheet_rev1.09.pdf](https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2209_datasheet_rev1.09.pdf)
+https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2209_datasheet_rev1.09.pdf
 
 or here if the link is broken
-[https://github.com/mumanchu/mumanchu/tree/main/assets/TMC2209_datasheet_rev1.09.pdf](https://github.com/mumanchu/mumanchu/tree/main/assets/TMC2209_datasheet_rev1.09.pdf)
+https://github.com/mumanchu/mumanchu/tree/main/assets/TMC2209_datasheet_rev1.09.pdf
 
 
 This data sheet covers the TMC2202, TMC2208 and TMC2224 (all the same apart from pinouts and a few characteristics) \
-[https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2202_TMC2208_TMC2224_datasheet_rev1.14.pdf](https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2202_TMC2208_TMC2224_datasheet_rev1.14.pdf)
+https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2202_TMC2208_TMC2224_datasheet_rev1.14.pdf
 
 TMC2225, this chip has not been tested, but I think it's the same \
-[https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2225_datasheet_rev1.14.pdf](https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2225_datasheet_rev1.14.pdf)
+https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2225_datasheet_rev1.14.pdf
 
 **FYSETC-TMC2209** \
 This is a great description of a typical TMC2209 board \
-[https://github.com/FYSETC/FYSETC-TMC2209](https://github.com/FYSETC/FYSETC-TMC2209)
+https://github.com/FYSETC/FYSETC-TMC2209
 
 **AN-002: Parameterization of StallGuard2™ & CoolStep™** \
 The Analog Devices Application Note to help you configure the TMC chips. It's complicated. \  
-[https://www.analog.com/en/resources/app-notes/an-002.html](https://www.analog.com/en/resources/app-notes/an-002.html)
-[https://www.analog.com/media/en/technical-documentation/app-notes/an-002.pdf](https://www.analog.com/media/en/technical-documentation/app-notes/an-002.pdf)
+https://www.analog.com/en/resources/app-notes/an-002.html
+https://www.analog.com/media/en/technical-documentation/app-notes/an-002.pdf
 
 TODO pdf was downloaded, put in ASSETS
 
 
 **Analog Devices TMC2209 Calculator** \
-[tmc2209_calculations.xlsx](https://www.analog.com/media/en/engineering-tools/design-tools/tmc2209_calculations.xlsx)
+This downloads a spreadsheet with VACTUAL calculations for verification...
+https://www.analog.com/media/en/engineering-tools/design-tools/tmc2209_calculations.xlsx
 
 
