@@ -1,9 +1,12 @@
 # TMC22xxDriver Library
-An advanced TCM22xx Stepper Motor Controller Library, another library from $${\color{green}mumanchu}$$.
+
+An advanced TCM22xx Stepper Motor Controller Library from $${\color{green}mumanchu}$$.
+
+There are already many TMC2209 libraries for Arduinos. So just to confuse you, here is another one.
 
 This library is for configuring and monitoring the TRINAMIC TMC22xx range of intelligent Stepper Motor Controller chips via the single-wire UART interface. This includes the TMC2202/2208/2209 and TMC2224/2225/2226. It runs on all STM32, SAMD, AVR, ESP32 and ESP8266 boards, but 32-bit boards are recommended.
 
-The library does not do the STEP/DIR control. That is done by a separate `MiniStepper` library (to be released soon). `MiniStepper` works together with this library or as a stand-alone library for controlling all standard motor controller chips via the STEP/DIR/EN pins. It is a non-blocking library which also provides S-curve acceleration and deceleration.
+The library does not do the STEP/DIR control. That is done by a separate STEP/DIR library like `MiniStepper` (to be released soon). `MiniStepper` works together with this library or as a stand-alone library for controlling all standard motor controller chips via the STEP/DIR/EN pins. It is a non-blocking library which also provides S-curve acceleration and deceleration.
 
 
 <!-- ========================================================================================== -->
@@ -11,11 +14,11 @@ The library does not do the STEP/DIR control. That is done by a separate `MiniSt
 ## Contents
 - [Introduction](#introduction)
 - [Advantages of This Library](#advantages)
-- [TMC22xx Modules](#tmc22xx-modules)
-- [Recommended 3D Printer and MCU Boards](#recommended-boards)
 - [Library API](#api)
 - [Example Sketch](#example-sketch)
 - [Notes About the Code](#notes)
+- [TMC22xx Modules](#tmc22xx-modules)
+- [Recommended 3D Printer and MCU Boards](#recommended-boards)
 - [Single Wire UART Interface](#uart)
 - [Prototype Shield](#prototype-shield)
 - [Silent Running](#silent-running)
@@ -32,13 +35,13 @@ The library does not do the STEP/DIR control. That is done by a separate `MiniSt
 <a name="introduction"></a>
 ## Introduction
 
-Some of the best stepper motor controller chips were developed by 'TRINAMIC Motion Control Gmbh', which has now been absorbed by 'Analog Devices Inc' to become the 'ADI Trinamic™' range. These intelligent TMC chips have a fast serial interface (UART up to 500K bits-per-second) for configuration and monitoring. The chips also have the standard STEP, DIR and ENABLE signals for traditional stepper motor control.
+Some of the best stepper motor controller chips were developed by 'TRINAMIC Motion Control Gmbh', which has now been absorbed by 'Analog Devices Inc' to become the 'ADI Trinamic™' range. These intelligent TMC chips have a fast single-wire serial interface (UART up to 500KBaud) for configuration and monitoring. The chips also have the standard STEP, DIR and ENABLE signals for traditional stepper motor control.
 
 The Trinamic range has several unique features: _StealthChop™_ and _MicroPlyer™_ for quiet motor operation; _SpreadCycle™_ for dynamic motor control using a "voltage chopper"; _StallGuard™_ for current load and stall detection; and _CoolStep™_ for current control with up to 75% energy savings. You can find out all about these features from the [Data Sheet](#data-sheets).
 
-The TMC2202/8/9 and TMC2224/5/6 are all the same apart from the packaging, pinouts, voltage and current ratings. There is a TMC2130 which is similar but uses SPI communications instead for UART. (This library can easily use SPI by modifying `setRegister()` and `getRegister()` to use SPI instead of UART, maybe I'll add that later...)
+The TMC2202/8/9 and TMC2224/5/6 are all the same apart from the packaging, pinouts, voltage and current ratings. (There is a TMC2130 which is similar but uses SPI communications instead for UART. This library can easily use SPI by modifying `setRegister()` and `getRegister()` to use SPI instead of UART, maybe I'll add that later...)
 
-I have several 3D printer controller boards that use Trinamic chips, and they _all_ use the TMC2209. I've not seen a board that uses the other versions. Some stand-alone controller modules which use the other chips are advertised, but does anybody buy them?
+I have several 3D printer controller boards that use Trinamic chips, and they _all_ use the TMC2209. I've not seen a board that uses the other versions. Some stand-alone controller modules using the other chips are advertised, but does anybody buy them?
 
 <!-- If you need to learn about stepper motors, check out this voluminous blog entry:
 https://muman.ch/muman/index.htm?muman-stepper-motor-control.htm -->
@@ -50,65 +53,21 @@ https://muman.ch/muman/index.htm?muman-stepper-motor-control.htm -->
 <a name="advantages"></a>
 ## Advantages of This Library 
 
-There are already many TMC2209 libraries for Arduinos. So just to confuse you, we've released another one.
-
-This one is part of a Stepper Motor Control Library suite which is being released in stages. `MultiTimerSAMD` and `OptimizedGPIO` are already available. Next will be the `MiniStepper` library for STEP/DIR control (but until then you can use any of the many STEP/DIR libraries).
+This library is part of a "Stepper Motor Control Library" suite which is being released in stages. `MultiTimerSAMD` and `OptimizedGPIO` are already available. Next will be the `MiniStepper` library for STEP/DIR control (but until then you can use any of the many STEP/DIR libraries).
 
 In addition:
-- This library supports _all_ the TMC chip's features (most libraries do not).
-- It has useful comments in the source code to help understand each method, although you'll still need to read the 80-page data sheet :-( 
-- Detects and reports communications errors, with an error count. This is useful in "noisy" environments where high currents are being switched. 
-- Uses the chip's received message counter `IFCOUNT` to validate communications. This has not been implemented in any other libraries.
-- Fast look-up table CRC calculation and byte reversal using `__asm__` instructions.
+- This library supports _all_ the TMC chip's features. Most other libraries do not.
+- It has useful comments in the source code to help understand each method, although you'll still need to read the 80-page ~~dirty~~ data sheet :-( 
 - Provides commissioning routines for RMS current calculations based on algorithms in the data sheet.
 - Works together with the `MiniStepper` library, and should work with any other STEP/DIR library.
-- Supports [One Time Programming (OTP)](#otp) (but it's patched out for safety because it can only be programmed once).
+- Supports [One Time Programming (OTP)](#otp), but it's patched out for safety because it can only be programmed once.
+- Uses the chip's received message counter `IFCOUNT` to validate communications. This has not been implemented in any other libraries.
+- Detects and reports other communications errors, with an error count. This is useful in "noisy" environments where high currents are being switched. 
+- Fast look-up table CRC calculation and byte reversal using `__asm__` instructions.
 - Additional `DEBUG` mode validation:
 	- detects writes to read-only registers and reads of write-only registers
 	- read-after-write validation of read/write registers
 	- validates all TX data that's echoed back to RX, see [Single Wire UART Interface](#uart) below
-
-<!-- ========================================================================================== -->
-
-<a name="tmc22xx-modules"></a>
-## TMC22xx Modules
-
-If you're not using a 3D printer board, then you'll need a TMC-based driver module.... 
-
-
-
-
-<!-- ========================================================================================== -->
-
-
-<a name="recommended-boards"></a>
-## Recommended 3D Printer and MCU Boards
-
-The library code runs on all architectures, SAMD, AVR, STM32, ESP32 and ESP8266, but 32-bit MCUs are recommended.
-
-Old (or new) 3D printer boards with an ICSP connector can be easily programmed. Many 3D printer boards use TMC2209 chips, but not all have the UART connections, and some have only TX connected. The ICSP connector (In Circuit Serial Programming) is needed to download the program, and you'll need a suitable USB-to-ICSP adapter like the Atmel-ICE or ST-LINK box. 
-
-However, debugging is rarely possible on 3D printer boards because few have the SWD (Serial Wire Debug) or JTAG connectors. So debugging and testing was first done with an Arduino Zero (built-in EDGB debugger) and a Nucleo-64 STM32 board (onboard ST-LINK debugger). A [Prototype Shield](#prototype-shield) was made for the tests. (The Arduino Zero can only support ONE stepper motor because it doesn't have enough outputs.)
-
-If not using a 3D printer board, use a microcontroller board with enough outputs to control the number of stepper motors you will use. Each motor uses at least 3 pins (DIR, STEP and EN). For 4 motor's you will need (at least) 12 outputs, so something more than an Arduino-style board is required. Up to 4 TMC chips can share the same UART connections because the UART protocol contains the "node address" 0..3.
-
-I recommend the 'Bigtreetech SKR Mini E3 V3.0' 3D printer board. This board has a nice STM32F401RCT6 ARM MCU, SWD debug connector, extra EEPROM memory, SD card, end stop inputs, high current MOSFET switched outputs, thermister inputs, etc. It is cheaper than an Arduino and has many more features! It costs around $30, but _rip-off_ prices can be more than double that!
-
-**BIGTREETECH SKR MINI E3 V3.0** \
-https://github.com/bigtreetech/BIGTREETECH-SKR-mini-E3
-[Schematic V3.0.1](https://github.com/bigtreetech/BIGTREETECH-SKR-mini-E3/blob/master/hardware/BTT%20SKR%20MINI%20E3%20V3.0.1/Hardware/BTT%20E3%20SKR%20MINI%20V3.0.1_SCH..pdf)
-
-TODO picture
-
-
-The best MCU board is probably one of the Nucleo-64 STM32 "evaluation boards", like the STM32F446RE. These have a lot of GPIOs, connected to over 100 I/O pins! The STM32F446 board runs at 180MHz, has 512KB Flash, 128KB RAM, floating point FPU and built-in ST-LINK debugging. Available everywhere and it costs less than $20! But no onboard sensors, WiFi, Bluetooth, EEPROM, etc.
-
-**Nucleo-64 STM32F446RE** \
-https://www.st.com/en/evaluation-tools/nucleo-f446re.html
-
-
-TODO picture in \assets
-
 
  
 <!-- ========================================================================================== -->
@@ -121,11 +80,7 @@ The library contains many methods. Only the first two, `begin()` and `setConfigu
 ```cpp
 class TMC22xxDriver
 {
-	bool begin(Stream* uart, uint address, uint enablePin, 
-		uint fullstepsPerRevolution = 200);
-
-	// Override this in a derived class to define your own configuration
-	// or just edit the code in this file if the motors are all the same
+	bool begin(Stream* uart, uint address, uint enablePin, uint fullstepsPerRevolution = 200);
 	virtual bool setConfiguration();
 
 	bool isConnected();
@@ -150,13 +105,6 @@ class TMC22xxDriver
 	bool getPWM_AUTO(uint* pwm_ofs_auto, uint* pwm_grad_auto);
 	bool getPWM_SCALE(uint* pwn_scale_sum, int* pwm_scale_auto);
 
-	bool setMicrosteps(uint microsteps);
-	int microstepsToMres(uint microsteps);
-	int mresToMicrosteps(uint mres);
-	bool getMicrosteps(uint* microsteps, bool forceRead = false);
-	bool getMicrostepRegisters(uint* mscnt, int* cur_a, int* cur_b);
-
-	bool setDriverCurrent(uint ihold, uint irun, uint iholdDelay);
 	bool setCHOPCONF(CHOPCONF chopConf);
 	bool setPWMCONF(PWMCONF pwmConf);
 	bool setCOOLCONF(COOLCONF coolConf);
@@ -164,6 +112,13 @@ class TMC22xxDriver
 	bool setTPWMTHRS(uint tpwmthrs);
 	bool setSGTHRS(uint sgthrs);
 	bool setTPOWERDOWN(uint tpowerdown);
+	bool setDriverCurrent(uint ihold, uint irun, uint iholdDelay);
+
+	bool setMicrosteps(uint microsteps);
+	int microstepsToMres(uint microsteps);
+	int mresToMicrosteps(uint mres);
+	bool getMicrosteps(uint* microsteps, bool forceRead = false);
+	bool getMicrostepRegisters(uint* mscnt, int* cur_a, int* cur_b);
 
 	bool velocityMoveStart(long vactual);
 	bool velocityMoveStop();
@@ -189,10 +144,10 @@ class TMC22xxDriver
 Once the serial port has been opened, call this from `setup()` to initialize the TMC chip. It returns `false` if something failed. Always check the return value. \
 `uart` is the UART serial port, `address` is the stepper motor number 0..3, `enablePin` is the pin number of the chip's `EN` pin, `fullstepsPerRevolution` can be left as the default 200 (1.8deg/step), or use 400 (0.9deg/step).
 
-**`bool setConfiguration();`** \
-This function is called to configure the TMC chip's registers. You can either edit the library code for your desired configuration, or override it in a derived class as shown in the [Example Sketch](#example-sketch). You would normally use the same configuration for each stepper motor. If not, use the override method.
+**`virtual bool setConfiguration();`** \
+This function is called to configure the TMC chip's registers. You can either edit the library code for your desired configuration, or override it in a derived class as shown in the [Example Sketch](#example-sketch). You would normally use the same configuration for each stepper motor. It's a good ide not to rely on the "power up reset" default values, because the chip may not always be reset (it has no RESET pin). 
 
-_See the comments in the source code for details of the all the other methods. There are data sheet page references to help too._
+_See the comments in the source code for details of the other methods. There are data sheet page references to help, e.g. "p12"._
 
 
 <!-- ========================================================================================== -->
@@ -200,7 +155,6 @@ _See the comments in the source code for details of the all the other methods. T
 <a name="example-sketch"></a>
 ## Example Sketch
 
-Chip address 0..3 from MS1/MS2 wiring
 
 
 
@@ -213,16 +167,7 @@ The library is in a single include file that contains both the `TMC22xxDriver` c
 
 For a bit of variety, 'get' and 'set' are used instead of 'read' and 'write', e.g. `getRegister()` and `setRegister()`. This is like C#'s getters and setters.
 
-The code assumes `byte` and `char` is a byte (8 bits), `int` is 16 ***or*** 32 bits (the library code works for both), `short` is always 16 bits, and `long` is always 32 bits. This is true for all MCUs. Because of this, `int8_t`, `int16_t` or `int32_t` (etc.) are not used unless it is to emphasize the number of bits.
-
-`ushort`, `uint` and `ulong` are also used (System V compatibility). You may have to `typedef` these if they are not defined in `types.h` for your platform:
-```cpp
-typedef unsigned short ushort;
-typedef unsigned int uint;
-typedef unsigned long ulong;
-```
-
-The contents of the TMC22xx chip's registers are defined with `struct` and `union`, which gives names to each bit or group of bits. Each register can be handled either as a 32-bit value `data` or as individual items. The code uses the same names as the data sheet, except all lower case for data, and all upper case for register names (the data sheet is inconsistent). Refer to the data sheet for descriptions of the registers and data. A data sheet page number, e.g. p12, is given for each register. 
+The contents of the TMC22xx chip's registers are defined with `struct` and `union`, which gives names to each bit or group of bits. Each register can be handled either as a 32-bit value `data` or as individual items. The code uses the same names as the data sheet, except lower case for data, and all upper case for register names (the data sheet is inconsistent). Refer to the data sheet for descriptions of the registers and data. A data sheet page number, e.g. p12, is given for each register. 
  
 To save reading a register before modifying it, the library uses _shadow registers_ to hold the value last written to certain registers. This is managed automatically by code in `setRegister()`.
 
@@ -230,14 +175,66 @@ For the STM32, assembly language instructions `__asm__` are used to speed up CRC
 
 If `DEBUG` is defined, the code does additional checks to ensure read-only registers are not written to and write-only registers are not read. It can also verify writes to readable registers by doing a write-read-and-compare, but only if the chip's TX pin is connected. This detects a lot of mistakes if you are making changes to the library.
 
-If both RX and TX are connected, it also validates the loopback message, since everything sent is also received (and discarded). This will detect bad connections or noise on the TX/RX lines. If RX is not connected, patch out the `TMC22xxDRIVER_HAS_ECHO` definition to disable this test.
+If both RX and TX are connected, it also validates the loopback message, since everything sent is also received (and normally discarded). This will detect bad connections or noise on the TX/RX lines. If RX is not connected, patch out the `TMC22xxDRIVER_HAS_ECHO` definition to disable this test.
+
+The code assumes `byte` and `char` is a byte (8 bits), `int` is 16 ***or*** 32 bits (the library code works for both), `short` is always 16 bits, and `long` is always 32 bits. This is true for all MCUs. Because of this, `int8_t`, `int16_t` or `int32_t` (etc.) are not used unless it is to emphasize the number of bits.
+
+`ushort`, `uint` and `ulong` are also used (System V compatibility). You may have to `typedef` these if they are not defined for your platform (see `types.h`):
+```cpp
+typedef unsigned short ushort;
+typedef unsigned int uint;
+typedef unsigned long ulong;
+```
 
 
 TODO choose a better name for `TMC22xxDRIVER_HAS_ECHO`
 
 
+<!-- ========================================================================================== -->
 
+<a name="tmc22xx-modules"></a>
+## TMC22xx Modules
 
+If you're not using a 3D printer board, then you'll need some TMC-based driver modules. There are many modules that use the TMC2209 chip. Here's just a few of them. 
+
+![TMC2209 Modules](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc2209-modules.jpg)
+
+All these boards have similar pinouts, EXCEPT for three pins on the left hand side, marked with the red box. These can be TX/RX/CLK, UART/PDN/CLK, SP/TX/RX, R8/UART/NC or SPRD/UART/PDN etc. Check these pins carefully, some already have the 1K resistor for TX, see [Single Wire UART Interface](#uart) below. 
+
+The three pins or holes next to the trimmer are usually DIAG, VREF and INDEX. The lower two pins, DIAG and INDEX are aligned on 2.54mm, so a standard pin connector can be used as you can see on the protype shield photograph. The TWOTREES and BIGTREETECH boards have the three pins wired as DIAG, INDEX and VREF, so INDEX is not aligned for 2.54mm pin connector! (But I cut the VREF track and connected the pin to INDEX so it fitted my prototype shield.) 
+
+Note that pins 4, 5 and 6 on the left, marked with the red boxes, may be different. The three aux pins on the top left are also different. The remaining pins are always the same. \
+![TMC2209 Pinouts](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc-board-pinouts.png) \
+_(On the middle board, is pin 6 CLK or TYPE? And what is TYPE?)_
+
+<!-- ========================================================================================== -->
+
+<a name="recommended-boards"></a>
+## Recommended 3D Printer and MCU Boards
+
+The `TCM22xxDriver` library runs on all architectures, SAMD, AVR, STM32, ESP32 and ESP8266, but 32-bit MCUs are recommended.
+
+Old (or new) 3D printer boards with an ICSP connector for programming can be used. Many recent 3D printer boards use TMC2209 chips, but not all have the UART connections, and some have only RX connected so the TMC chips can only be written to. The ICSP connector (In Circuit Serial Programming) is needed to download the program (or upload, if you are an Arduino), and you'll need a suitable USB-to-ICSP adapter like the Atmel-ICE or ST-LINK box. 
+
+However, debugging is rarely possible on 3D printer boards because few have the SWD (Serial Wire Debug) or JTAG connectors. So debugging and testing was first done with a Nucleo-64 STM32 board (onboard ST-LINK debugger), and an Arduino Zero (built-in EDGB debugger). A [Prototype Shield](#prototype-shield) was made for the tests. Note that the Arduino Zero can only support one stepper motor because it doesn't have enough outputs.
+
+If not using a 3D printer board, use a microcontroller board with enough outputs to control the desired number of stepper motors. Each motor uses at least 3 pins (DIR, STEP and EN). For 4 motor's you will need (at least) 12 outputs, so something more than an Arduino-style board is required. Up to 4 TMC chips can share the same UART connections because the UART protocol contains the "node address" 0..3.
+
+### BIGTREETECH SKR MINI E3 V3.0
+
+I recommend the 'Bigtreetech SKR Mini E3 V3.0' 3D printer board. This board has a nice STM32F401RCT6 ARM MCU with an SWD debug connector, four TMC2209 chips, extra EEPROM memory, SD card, filtered end stop inputs, high current MOSFET switched outputs, thermister inputs, etc. It is cheaper than an Arduino, costing about $30 (but _rip-off_ prices can be more than double that, do not buy those!)
+
+https://github.com/bigtreetech/BIGTREETECH-SKR-mini-E3 \
+[Schematic V3.0.1](https://github.com/bigtreetech/BIGTREETECH-SKR-mini-E3/blob/master/hardware/BTT%20SKR%20MINI%20E3%20V3.0.1/Hardware/BTT%20E3%20SKR%20MINI%20V3.0.1_SCH..pdf) 
+
+![Bigtreetech SKR MINI E3](https://github.com/mumanchu/mumanchu/blob/main/assets/bigtreetech-skr-mini-e3-small.png)
+
+### Nucleo-64 STM32F446RE
+
+The best MCU boards are the Nucleo-64 STM32 evaluation boards, like the STM32F446RE. These have the standard set of Arduino connectors, plus over 100 additional I/O pins! The STM32F446RE board runs at 180MHz, has 512KB Flash, 128KB RAM, floating point uint (FPU) and _fantastic_ built-in ST-LINK debugging. It costs less than $20! But it has no onboard sensors, EEPROM, SD card, high-power outputs, etc. These are _great_ for debugging.
+
+https://www.st.com/en/evaluation-tools/nucleo-f446re.html \
+![Nucleo-64 STM32F446RE](https://github.com/mumanchu/mumanchu/blob/main/assets/nucleo-64-stm32f446re.jpg)
 
 
 <!-- ========================================================================================== -->
@@ -245,27 +242,28 @@ TODO choose a better name for `TMC22xxDRIVER_HAS_ECHO`
 <a name="uart"></a>
 ## Single Wire UART Interface
 
-Serial single-wire UART communications
+The TMC22xx chips have a dual-purpose pin called PDN_UART. This can either work as a power-down input (for standstill current reduction) or as a fast serial TX/RX port for intelligent control. The mode selection is done via the `pdn_disable` bit in the `GCONF` configuration register. See the library's `setConfiguration()` method.
+
+The UART pin is normally a input, listening for messages. When it receives a message with the chip's "node address" (0..3, as defined by the AD0/AD1 pins), it becomes an output and sends a response then switches back to listening mode. The chip automatically adjusts to the baud rate of the incomming message, 9600..500'000 baud. Recommended is around 256'000 baud - it does not need to be super fast.
+
+All messages have a 1-byte polynomial CRC which is used to validate each message.
+
+Up to 4 motors can be connected to the UARTs and share the same TX and RX lines. All chips listen to the messages sent by the MCU, but only the addressed chip will respond. On 3D printer boards, each TMC2208 chip has its address hard-wired on the board. The AD0/AD1 pins can also be used as MS0/MS1 to select the microsteps, but because UART programming is used the microsteps are progammed via the `CHOPCONF` register's `MRES` bits.
+
+Because there is only one pin for both TX and RX, it's necessary to use an external 1K ohm resistor to prevent conflicts between the MCU's TX driver and the TMC chip UART output. A few of the stand-alone driver boards have this resistor already fitted.
+
+![TMC22xx TX Resistor](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc2209-tx-rx.jpg)
 
 
-Up to 4 motors can be connected to the UARTs and share the same TX and RX lines, because the serial protocol contains the "node address" (0..3). All chips listen to the messages sent by the MCU, but only the addressed chip will respond. The chip address is defined by the MS1_AD0 and MS2_AD1 pins (these are not needed for Microstep selection because that can be programmed via the UART interface). On 3D printer boards, each TMC2208 chip has the address hard-wired on the board.
+Some of the 3D printer main boards do not have the RX connection, so the TMC22xx registers cannot be read - they are all 'write-only'.
 
+The MCU's TX is effectively looped back to the RX pin via the 1K resistor, so the MCU will receive all the data that it transmits (if the RX pin is connected). This has the advantage that the MCU can validate that the data received by the UART pin was correct and there was no noise on the line that disrupted communications. The TMC22xxDrive library library does this check (in `DEBUG` mode), see `setRegister()`. 
 
-The TMC22xx chips have a dual-purpose pin called PDN_UART. This can either work as a power-down input (for standstill current reduction) or as a fast serial TX/RX port for intelligent control. The mode selection is done via the `pdn_disable` bit in the `GCONF` configuration register. This is done in `setConfiguration()`.
+It is easy to address more than 4 TMC chips. The manual (p21) recommends an "analog switch" 74HC4066 to select individual chips with individual "chip select" outputs. That allows MC0/MC1 to be used for microstep selection, but it uses one output per chip. 
 
-Because there is only one pin for both TX and RX, it's necessary to use an external 1K ohm resistor to stop the MCU's TX driver affecting communications. Many of the stand-alone driver boards have this resistor already fitted. 
+A better way would be to use one output to control a single 1-pole 2-way (single pole double throw SPDT) analog switch to select a bank of four TMC chips, e.g. 0..3 or 4..7, so node addresses 0..3 can be used for each bank of four chips. This could be done with a cheap DG41xx chip (Vishay or Maxim), or even an old CD4016, CD4051, CD4053 etc.
 
-
-<!--image here-->
-
-addressing multiple nodes p21
-
-Some the 3D printer main boards (even the Qidi) do not have the RX connection, so the TMC2209 registers cannot be read - they are all 'write-only'.
-Because the MCU's TX is effectively looped back to the RX pin via the 1K resistor, the MCU will receive all the data that it transmits (if the RX pin is connected). This has the advantage that the MCU can validate that the data received by the UART pin was correct and there was no noise on the line that disrupted communications. The Mattlabs library does this check (in DEBUG mode), see setRegister(). 
-
-All sent and received messages have a 1-byte polynomial CRC which will detect most communications errors.
-The port runs at up to 500000 baud, automatically adjusting to the baud rate of the received message. Running at a lower speed (say 256000) might be better for noise immunity, especially if you cannot read from the chip to check that everything is working.
-Separate power supply pins for I/O (VCC) and the motor (VS)
+![TMC Multiplexer](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc-multiplexer.png)
 
 
 <!-- ========================================================================================== -->
@@ -273,47 +271,30 @@ Separate power supply pins for I/O (VCC) and the motor (VS)
 <a name="prototype-shield"></a>
 ## Prototype Shield
 
-<!-- circuit diagram -->
+For library development, a prototype shield was designed that worked with the Arduino Zero and the Nucleo-64 STM32 boards. This has jumpers for selecting the pins that connect to RX and TX, because the Nucleo boards use D0 and D1 for USB communications, so the Serial1 pins must be used.
+
+![TMC22xx Prototype Shield](https://github.com/mumanchu/mumanchu/blob/main/assets/prototype-shield-2.png)
+
+NOTES
+(1) On some modules, the INDEX and DIAG pins may be reversed, or one may be VREF.
+(2) These jumpers select the RX/TX pins which wil be used. For the Arduino Zero, jumper 1-2 and 4-5. For the Nucleo-64 jumper 2-3 and 5-6.
+(3) Use 5V for a 5V MCU, or 3.3V for a 3.3V MCU, else "Bang!". See Disclaimer. 3.3V will probably work for 5V MCUs.
+
+For validating the motor movement, a disc encoder with 20 slots was fitted to the motor's spindle. This used an "opto interrupter" (ITR9606 or ITR9608) to provide 20 pulses-per-revolution into the TACHO (tachometer) input.
+
+![Tachometer](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc-tachometer.png)
+
+The INDEX and TACHO inputs generate iterrupts which are handled by the `Tacho` class in the [Example Sketch](*example-sketch), see `tacho.h`.
+
+The I/O pins (i.e. STEP/DIR/EN and UART) can be driven by 3.3V or 5V MCUs, and the VIO (or VCC_IO) power pin is used for these. 
+
+The motor is supplied by an external 12V or 24V power supply (minimum 2A). The motor power also supplies the internal logic via its internal 5V regulator. If only VIO (VCC_IO) is present, UART communications will not work.
+
+![Prototype Shield Photo](https://github.com/mumanchu/mumanchu/blob/main/assets/prototype-shield.jpg)
 
 
-Notes
-(1) The INDEX and DIAG outputs could be connected, see data sheet
-(2) Serial port pins may be different, or you can use SoftwareSerial
-(3) Use 5V for a 5V MCU, or 3.3V for a 3.3V MCU, else "Bang!", see Disclaimer.
-
-
-
-TWOTREES
-   INDEX
-     O
-   O   O
- DIAG VREF
-
-BIGTREETECH
-   VREF
-     O
-   O   O
-INDEX DIAG
-
-Disc Encoder 20 slots
-
-
-
-
-The I/O pins (i.e. STEP/DIR/EN and UART) can be driven by 3.3V or 5V MCUs, and the VIO (or VCC_IO) power pin is used for these. The motor can be supplied with 4.5 .. 28 volts, so there is a separate VM (or VS) pin to power the motor. The motor power also supplies the internal logic via its internal 5V regulator. If only VIO (VCC_IO) is present, UART communications will not work.
-My first Arduino shield prototype, with a 24V motor supply, had a hidden short between a motor control pin output and an Arduino input. 24V on the microcontroller input immediately destroyed it! So take care!
-The DIAG output
-
-
-
-Most 3D printer boards have the TMC2209's RX and TX UART pins connected. But some don't, and some have only the chip's RX pin connected so you can write data but cannot read anything. If the UART pins are not connected then they may be us using the "One Time Programming" (OTP) feature to configure the chip's special features for their own motors - or maybe they are just using the default settings which are (probably) fine for most applications.
-
-
-TODO
-SoftwareSerial can be used but it will not work while the stepper motor interrupt is active because it affects the timing (SoftwareSerial uses delay loops). The solution is to disable the interrupt when sending messages to the TMC2209, which can be done only when the motor is stopped, . SoftwareSerial was used on the Arduino UNO...
-
-"Diagnostic and StallGuard output. High level upon stall detection or driver error. Reset error condition by ENN=high."
-
+> [!CAUTION]
+> My first shield prototype, with a 24V motor supply, had a hidden short between a motor control pin output and an MCU input. 24V on the MCU input immediately destroyed it! So take care! 12V or 24V and 5V or 3.3V MCUs do not mix!
 
 
 <!-- ========================================================================================== -->
@@ -342,26 +323,28 @@ TODO MiniStepper PWM control
 <!-- ========================================================================================== -->
 
 <a name="velocity-control"></a>
-## Velocity Control
+## Velocity Control, p67
 
 This library does not control the motor with the STEP/DIR pins, but it _can_ use the TMC's 'internal step pulse generator' to run the motor forwards or backwards at a particular velocity. This makes it run like a normal speed-controlled motor. 
 
-TODO
-For precise movements, you could use the `INDEX` pulse output to count the number of steps.
+The velocity is set by the VACTUAL register. The VACTUAL value is in _microsteps per time interval 't'_, where 't' is (fclk / 2^24). The `xxxToVACTUAL()` methods can be used to get the `vactual` value of a speed in revolutions-per-minute, revolutions-per-second or fullsteps-per-second. 
 
-It does not do any acceleration or deceleration, so you must do that yourself. _"Motion at higher velocities will require ramping up and ramping down the velocity value by software."_ 
+To control direction, a +ve `vactual` value rotates one way, and a -ve `vactual` rotates the other way. 
 
-The velocity is a 24-bit signed value `microsteps / t`, with the direction controlled by the sign (+ve or -ve) of the value.
+The chip does not do any acceleration or deceleration, so you must do that in software. The data sheet says, _"Motion at higher velocities will require ramping up and ramping down the velocity value by software."_ It's true. If you try to start the motor at a speed above its starting speed, then it will not move, it will sit there making strange noises. But if you ramp up the speed slowly it works pefectly.
 
-This library has two methods for velocity control:
+Maximum speeds are about 300rpm, 5rps or 1000sps, but it depends on the motor and its load.
+
+This library has these methods for velocity control:
 ```cpp
-	// velocity : -8'388'608 .. 8'388'607 (0xff800000 .. 0x007fffff)
-	// direction is controlled by the sign (+ve or -ve)
-	bool velocityMoveStart(long velocity);
+	bool velocityMoveStart(long vactual);
 	bool velocityMoveStop();
-	long rpmToVelocity(int rpm);
-	long spsToVelocity(long sps);
+	long rpmToVACTUAL(float revolutionsPerMinute);
+	long rpsToVACTUAL(float revolutionsPerSecond);
+	long fspsToVACTUAL(float fullstepsPerSecond);
 ```
+
+The [Example Sketch](#example-sketch) illustrates acceleration and deceleration using velocity control.
 
 <!-- ========================================================================================== -->
 
@@ -370,9 +353,9 @@ This library has two methods for velocity control:
 
 The TMC chips have the traditional STEP, DIR and EN stepper motor control signals. These are not handled by this library.
 
-The code to do the STEP/DIR control has been put into a separate `MiniStepper` library. This is because the `MiniStepper` library can be used with _any_ motor controller chip, not just the intelligent TMC22xx chips. This is a sophisticated 'non-blocking' library that uses timers and PWM, has S-curve acceleration/deceleration, and controls up to 4 motors simultaneously.
+The code to do the STEP/DIR control has been put into a separate `MiniStepper` library. This is because the `MiniStepper` library can be used with _any_ motor controller chip, not just the intelligent TMC22xx chips. This is a sophisticated 'non-blocking' library that uses a hardware timer, has S-curve acceleration/deceleration, and controls up to 4 motors simultaneously.
 
-The `MiniStepper` library will be released soon, but until then you can use any of the other stepper libraries. Note that some 'non blocking' libraries rely on a call from `loop()`, so the motor stops while the loop is doing something else. You won't have that problem with `MiniStepper` because the entire movement is controlled by interrupts.
+The `MiniStepper` library will be released soon, but until then you can use any of the other stepper libraries. Note that some 'non blocking' libraries rely on a call from `loop()`, so the motor stops while the loop is doing something else. You won't have this problem with `MiniStepper` because all movements are controlled by a timer interrupt.
 
 
 
