@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////
 // Example sketch for the TXM22xxDriver Library
-// Copyright (C) muman.ch, 2026.02.25
+// Copyright (C) muman.ch, 2026.04.13
 // 
 // For details see the library's github entry:
 // https://github.com/mumanchu/TMC22xxDriver
@@ -38,8 +38,8 @@ void LogError(const char* msg, const char* filePath, uint line)
 
 // TMC2209 Module Pins
 #define RX2				2	// UART RX pin on Nucleo-64 (see JPR)
-#define INDEX_PIN		4
-#define DIAG_PIN		3
+#define INDEX_PIN		10	// INDEX and DIAG may be swapped
+#define DIAG_PIN		4	// on ZERO use D10 (no interrupts on D4)
 #define DIR_PIN			5
 #define STEP_PIN		6
 #define ENABLE_PIN		7
@@ -228,6 +228,7 @@ void setup()
 	tmcDriver.enableMotorDrivers();
 }
 
+
 /////////////////////////////////////////////////////////////////////
 // Continuous Loop
 
@@ -263,8 +264,11 @@ void loop()
 			accelerating = true;
 
 			// show tachometer and index pulses
-			Serial.printf("tacho=%lu\r\n", tachometer.getCountAndReset());
-			Serial.printf("index=%lu\r\n", indexPulse.getCountAndReset());
+			char buf[100];
+			sprintf(buf, "tacho=%lu", tachometer.getCountAndReset());
+			Serial.println(buf);
+			sprintf(buf, "index=%lu", indexPulse.getCountAndReset());
+			Serial.println(buf);
 		}
 
 		// if at maximum speed, start decelerating

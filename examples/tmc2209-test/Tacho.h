@@ -45,7 +45,11 @@ public:
 		microsecSum = 0;
 		lastMicrosecs = 0;
 		pinMode(pin, INPUT);
+		#ifdef ARDUINO_ARCH_SAMD
+		attachInterrupt(pin, interruptHandler, (PinStatus)mode);
+		#else
 		attachInterrupt(pin, interruptHandler, mode);
+		#endif
 	}
 
 	void reset() {
