@@ -1,4 +1,4 @@
-﻿# TMC22xxDriver Library
+# TMC22xxDriver Library
 
 An advanced TCM22xx Stepper Motor Controller Library from $${\color{green}mumanchu}$$.
 
@@ -10,8 +10,11 @@ It can be used with stand-alone [TMC22xx modules](#tmc22xx-modules), or with old
 
 The library does not do the STEP/DIR control. That is done by a separate STEP/DIR library called `MiniStepper`, to be released soon. (`MiniStepper` works together with this library or as a stand-alone library for controlling all standard motor controller chips via the STEP/DIR/EN pins. It is a non-blocking library which also provides S-Curve acceleration/deceleration.)
 
+![TMC2209 Module](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/tmc2209-module.jpg)  ![Bigtreetech Board](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/bigtreetech-skr-mini-e3.jpg)
+
+
 **All page numbers in the code and documentation (e.g. p20), refer to this TMC2209 data sheet** \
-https://github.com/mumanchu/mumanchu/tree/main/assets/TMC2209_datasheet_rev1.09.pdf \
+https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2209_datasheet_rev1.09.pdf
 
 
 <!-- ========================================================================================== -->
@@ -220,7 +223,7 @@ typedef unsigned long ulong;
 
 If you're not using a 3D printer board, then you'll need a TMC-based driver module for each motor. There are many modules that use the TMC2209 chip, and all of them will work with this library. Here's just a few of them... 
 
-![TMC2209 Modules](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc2209-modules.jpg)
+![TMC2209 Modules](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/tmc2209-modules.jpg)
 
 All these modules have similar pinouts, EXCEPT for three pins on the left hand side, marked with the red box in the picture below. These can be TX/RX/CLK, UART/PDN/CLK, SP/TX/RX, R8/UART/NC or SPRD/UART/PDN etc. Check these pins carefully. Some already have the 1K resistor for TX, see [Single Wire UART Interface](#uart) below. 
 
@@ -228,7 +231,7 @@ The three pins or holes next to the trimmer (in a triangle format) are usually D
 
 In the picture below, pins 4, 5 and 6 on the left are marked with the red boxes, these may be different. The three aux pins on the top left are also different. The remaining pins are always the same.
 
-![TMC2209 Pinouts](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc-board-pinouts.png) \
+![TMC2209 Pinouts](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/tmc-board-pinouts.png) \
 _(On the middle board, is pin 6 CLK or TYPE? And what is TYPE? The documentation is often wrong.)_
 
 <!-- ========================================================================================== -->
@@ -250,14 +253,14 @@ I recommend the 'Bigtreetech SKR Mini E3 V3.0' 3D printer board. This board has 
 
 https://github.com/bigtreetech/BIGTREETECH-SKR-mini-E3 \
 [Schematic V3.0.1](https://github.com/bigtreetech/BIGTREETECH-SKR-mini-E3/blob/master/hardware/BTT%20SKR%20MINI%20E3%20V3.0.1/Hardware/BTT%20E3%20SKR%20MINI%20V3.0.1_SCH..pdf) \
-![Bigtreetech SKR MINI E3](https://github.com/mumanchu/mumanchu/blob/main/assets/bigtreetech-skr-mini-e3-small.png)
+![Bigtreetech SKR MINI E3](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/bigtreetech-skr-mini-e3-small.png)
 
 ### Nucleo-64 STM32F446RE
 
 The best MCU boards are the Nucleo-64 STM32 evaluation boards, like the STM32F446RE. These have the standard set of Arduino connectors, plus over 100 additional I/O pins! The STM32F446RE board runs at 180MHz, has 512KB Flash, 128KB RAM, floating point uint (FPU) and _fantastic_ built-in ST-LINK debugging. It costs less than $20! These are _great_ for debugging. But they have no onboard sensors, EEPROM, SD card, high-power outputs, etc. 
 
 https://www.st.com/en/evaluation-tools/nucleo-f446re.html \
-![Nucleo-64 STM32F446RE](https://github.com/mumanchu/mumanchu/blob/main/assets/nucleo-64-stm32f446re.jpg)
+![Nucleo-64 STM32F446RE](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/nucleo-64-stm32f446re.jpg)
 
 
 <!-- ========================================================================================== -->
@@ -275,7 +278,7 @@ Up to 4 motors can be connected, sharing the same TX and RX lines. Each message 
 
 There is only one pin for both TX and RX, so it's necessary to use an external 1K ohm resistor to prevent conflicts between the MCU's TX driver and the TMC chip's UART outputs. Some of the stand-alone driver boards have this resistor already fitted. If not, you must add it to your circuit.
 
-![TMC22xx TX Resistor](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc2209-tx-rx.jpg)
+![TMC22xx TX Resistor](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/tmc2209-tx-rx.jpg)
 
 
 A few of the 3D printer main boards do not have the RX connection, so the TMC22xx registers cannot be read. Only the writeable registers can be written. Not even the status registers can be read. This is not good.
@@ -286,7 +289,7 @@ It is easy to address more than 4 TMC chips. The manual (p21) recommends an "ana
 
 A better way is to use a single output to control a 1-pole 2-way (single pole double throw SPDT) analog switch to select a bank of four TMC chips. Bank0 = 0..3 and Bank1 = 4..7, so node addresses 0..3 can be used for both banks of four chips. This can be done with a cheap DG41xx analog multiplexer chip (Vishay or Maxim), or even an old CD4016, CD4051, CD4053 etc.
 
-![TMC Multiplexer](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc-multiplexer.png)
+![TMC Multiplexer](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/tmc-multiplexer.png)
 
 
 <!-- ========================================================================================== -->
@@ -296,7 +299,7 @@ A better way is to use a single output to control a 1-pole 2-way (single pole do
 
 For library development, a prototype shield was designed that works with the Arduino Zero and the Nucleo-64 STM32 boards. The prototype has jumpers for selecting the RX/TX pins, because the Nucleo boards use D0 and D1 for USB so they won't work with the TMC's UART, but the Arduino Zero can use the standard D0/D1 pins. 
 
-![TMC22xx Prototype Shield](https://github.com/mumanchu/mumanchu/blob/main/assets/prototype-shield-2.png)
+![TMC22xx Prototype Shield](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/prototype-shield-2.png)
 
 **NOTES**
 1. On some modules, the INDEX and DIAG pins may be reversed, or one may be VREF.
@@ -305,7 +308,7 @@ For library development, a prototype shield was designed that works with the Ard
 
 For validating the motor movement, a disc encoder with 20 slots was fitted to the motor's spindle. This is read using an "opto interrupter" (like the ITR9606 or ITR9608) to provide 20 pulses-per-revolution into the TACHO (tachometer) input.
 
-![Tachometer](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc-tachometer.png)
+![Tachometer](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/tmc-tachometer.png)
 
 The INDEX and TACHO inputs generate iterrupts which are handled by the `Tacho` class in the [Example Sketch](*example-sketch), see `Tacho.h`.
 
@@ -313,7 +316,7 @@ The I/O pins (i.e. STEP/DIR/EN and UART) can be driven by 3.3V or 5V MCUs, the V
 
 The motor power VM is supplied by an external 12V or 24V power supply (1A per motor). VM also supplies the internal logic via the TMC chip's internal 5V regulator. UART communications will not work without it.
 
-![Prototype Shield Photo](https://github.com/mumanchu/mumanchu/blob/main/assets/prototype-shield.jpg)
+![Prototype Shield Photo](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/prototype-shield.jpg)
 
 
 > [!CAUTION]
@@ -476,8 +479,9 @@ If you do want to do One Time Programming, enable the `programOTP()` method in t
 ## Data Sheets and References
 
 **All page numbers in the code and documentation (e.g. p20), refer to this TMC2209 data sheet** \
-https://github.com/mumanchu/mumanchu/tree/main/assets/TMC2209_datasheet_rev1.09.pdf \
-https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2209_datasheet_rev1.09.pdf
+https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2209_datasheet_rev1.09.pdf \
+https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/TMC2209_datasheet_rev1.09.pdf
+
 
 This data sheet covers the TMC2202, TMC2208 and TMC2224 (all the same apart from pinouts and a few characteristics) \
 https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2202_TMC2208_TMC2224_datasheet_rev1.14.pdf
@@ -491,7 +495,7 @@ https://github.com/FYSETC/FYSETC-TMC2209
 
 **AN-002: Parameterization of StallGuard2™ & CoolStep™** \
 The Analog Devices Application Note to help you configure the TMC chips. It's complicated. \  
-https://github.com/mumanchu/mumanchu/tree/main/assets/an-002.html \
+https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/an-002.html \
 https://www.analog.com/en/resources/app-notes/an-002.html
 <!-- https://www.analog.com/media/en/technical-documentation/app-notes/an-002.pdf -->
 
