@@ -1,4 +1,4 @@
-# TMC22xxDriver Library
+﻿# TMC22xxDriver Library
 
 An advanced TCM22xx Stepper Motor Controller Library from $${\color{green}mumanchu}$$.
 
@@ -285,7 +285,7 @@ A few of the 3D printer main boards do not have the RX connection, so the TMC22x
 
 The MCU's TX is effectively looped back to the RX pin via the 1K resistor, so the MCU will receive all the data that it transmits (if the RX pin is connected). This has the advantage that the MCU can validate that the data received by the UART pin was correct and there was no noise on the line that disrupted communications. The TMC22xxDrive library library does this check (in `DEBUG` mode), see `setRegister()`. But this is probably overkill.
 
-It is easy to address more than 4 TMC chips. The manual (p21) recommends an "analog switch" 74HC4066 to select individual chips with individual "chip select" outputs. That allows MC0/MC1 to be used for microstep selection, but it uses one additional output per chip which is not very efficient.
+It is easy to address more than four TMC chips. The data sheet (p21) recommends an "analog switch" 74HC4066 to select individual chips with individual "chip select" outputs. That allows MC0/MC1 to be used for microstep selection, but it uses one additional output per chip which is not very efficient.
 
 A better way is to use a single output to control a 1-pole 2-way (single pole double throw SPDT) analog switch to select a bank of four TMC chips. Bank0 = 0..3 and Bank1 = 4..7, so node addresses 0..3 can be used for both banks of four chips. This can be done with a cheap DG41xx analog multiplexer chip (Vishay or Maxim), or even an old CD4016, CD4051, CD4053 etc.
 
@@ -305,6 +305,7 @@ For library development, a prototype shield was designed that works with the Ard
 1. On some modules, the INDEX and DIAG pins may be reversed, or one may be VREF.
 2. These jumpers select the RX/TX pins which wil be used. For the Arduino Zero, jumper 1-2 and 4-5. For the Nucleo-64 jumper 2-3 and 5-6.
 3. Use 5V for a 5V MCU, or 3.3V for a 3.3V MCU, else "BANG!". See Disclaimer. 3.3V usually works for 5V MCUs, but not the other way round!
+4. The ZERO does not support interrupts on pin D4. So use D10 instead for INDEX or DIAG (see note 1).
 
 For validating the motor movement, a disc encoder with 20 slots was fitted to the motor's spindle. This is read using an "opto interrupter" (like the ITR9606 or ITR9608) to provide 20 pulses-per-revolution into the TACHO (tachometer) input.
 
