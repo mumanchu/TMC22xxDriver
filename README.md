@@ -182,7 +182,7 @@ The `ASSERT()` macro checks data at run time, and reports invalid values to Seri
 
 ### Derived Class for `setConfiguration()`
 
-To avoid editing the code in TMC22xxDriver.h, you can create a deprived class and override the `setConfiguration()` to configure the TMC chip. Normally all the motors will have the same configuration. 
+To avoid editing the code in `TMC22xxDriver.h`, you can create a derived class and override the `setConfiguration()` to configure the TMC chip. Normally all the motors will have the same configuration. 
 
 ### `Tacho` Class
 
@@ -194,7 +194,7 @@ The INDEX and TACHO outputs are connected to inputs that generate interrupts. Th
 <a name="notes"></a>
 ## Notes About The Code
 
-The library is in a single include file that contains both the `TMC22xxDriver` class definition and the code. This is fine if you want to use it from only _one_ source file (.cpp or .ino) - which is recommended. But it won't work if you want to access the class from more than one source file. In that case, cut-and-paste the _code_ part into a separate '.cpp' file to be linked only once, leaving the class definition in the include file.
+The library is in a single include file `TMC22xxDriver.h` that contains both the `TMC22xxDriver` class definition and the code. This is fine if you want to use it from only _one_ source file (.cpp or .ino) - which is recommended. But it won't work if you want to access the class from more than one source file. In that case, cut-and-paste the _code_ part into a separate '.cpp' file to be linked only once, leaving the class definition in the include file.
 
 For a bit of variety, 'get' and 'set' are used instead of 'read' and 'write', e.g. `getRegister()` and `setRegister()`. This is like C#'s getters and setters.
 
