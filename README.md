@@ -509,6 +509,7 @@ https://www.analog.com/media/en/engineering-tools/design-tools/tmc2209_calculati
 https://www.faulhaber.com/fileadmin/Import/Media/AN015_EN.pdf \
 and much more good stuff too... \
 https://www.faulhaber.com/en/know-how/application-notes
+
 <br/>
 
 **Joke of the Week** \
