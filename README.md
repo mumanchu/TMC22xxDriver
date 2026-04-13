@@ -35,6 +35,7 @@ https://www.analog.com/media/en/technical-documentation/data-sheets/TMC2209_data
 - [Stall Detection: Does it work?](#stall-detection)
 - [One Time Programming (OTP)](#otp)
 - [Data Sheets and References](#data-sheets)
+- [Revision History](#revision-history)
 
 _\<i think you've written way too much, nobody's ever going to read it, not even me - ed\>_
 
@@ -229,7 +230,7 @@ All these modules have similar pinouts, EXCEPT for three pins on the left hand s
 
 The three pins or holes next to the trimmer (in a triangle format) are usually DIAG, VREF and INDEX. The lower two pins, DIAG and INDEX are aligned on 2.54mm, so a standard pin connector can be used for these two. The TWOTREES and BIGTREETECH boards have the three pins wired as DIAG, INDEX and VREF, so INDEX is not aligned for 2.54mm pin connector! (But I cut the VREF track and connected the pin to INDEX so it fitted my prototype shield.) There are no standards for these three pins.
 
-In the picture below, pins 4, 5 and 6 on the left are marked with the red boxes, these may be different. The three aux pins on the top left are also different. The remaining pins are always the same.
+In the pictures below, pins 4, 5 and 6 on the left are marked with the red boxes, these may be different. The three aux pins on the top left are also different. The remaining pins are always the same.
 
 ![TMC2209 Pinouts](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/tmc-board-pinouts.png) \
 _(On the middle board, is pin 6 CLK or TYPE? And what is TYPE? The documentation is often wrong.)_
@@ -509,6 +510,16 @@ https://www.analog.com/media/en/engineering-tools/design-tools/tmc2209_calculati
 https://www.faulhaber.com/fileadmin/Import/Media/AN015_EN.pdf \
 and much more good stuff too... \
 https://www.faulhaber.com/en/know-how/application-notes
+
+
+<!-- ========================================================================================== -->
+
+<a name="revision-history"></a>
+# Revision History
+
+| Date       | Version  | Description |
+|:---------- |:---------|:----------- |
+| 2026.04.14 | 1.0.0	| The first version! |
 
 <br/>
 
