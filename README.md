@@ -1,6 +1,6 @@
 ﻿# TMC22xxDriver Library
 
-An advanced TCM22xx Stepper Motor Controller Library from $${\color{green}mumanchu}$$.
+A TCM22xx Stepper Motor Controller Library from $${\color{green}mumanchu}$$.
 
 There are already _many_ TMC2209 libraries out there. So just to confuse you, here is another one.
 
