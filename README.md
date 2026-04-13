@@ -166,13 +166,13 @@ _See the comments in the source code for details of the other methods. There are
 
 See [tmc2209-test.ino](https://github.com/mumanchu/TMC22xxDriver/blob/main/examples/tmc2209-test/tmc2209-test.ino).
 
-To use the example sketch you will need to build a circuit similar to the [Prototype Shield](#prototype-shield), which connects the TMC22xx module to the MCU's I/Os. Or if you are running it on an existing 3D printer board, get the `pins_xxx.h` file from the relevant Marlin github repository to find the UART and STEP/DIR pins for the board.
+To use the example sketch you will need to build a circuit similar to the [Prototype Shield](#prototype-shield), which connects the TMC22xx module to the MCU's GPIOs. Or if you are running it on an existing 3D printer board, get the `pins_xxx.h` file from the relevant Marlin github repository to find the UART and STEP/DIR pins for the board.
 
 The example sketch is quite big and may look confusing at first. It illustrates several things:
 
 - Debug code using the `ASSERT()` and `LOGERROR()` macros in `MumanchuDebug.h`
 - Creating a derived class to override the default `setConfiguration()` code in the library
-- Using the `Tacho.h` class to count and timer input interrupts for the INDEX and TACHO inputs
+- Using the `Tacho.h` class to count and time the input interrupts from the INDEX and TACHO inputs
 - Accelerating and decelerating a stepper motor using the TMC chip's [Velocity Control](#velocity-control) feature
 
 ### `DEBUG` Code
@@ -187,6 +187,10 @@ To avoid editing the code in `TMC22xxDriver.h`, you can create a derived class a
 ### `Tacho` Class
 
 The INDEX and TACHO outputs are connected to inputs that generate interrupts. The interrupts are timed and counted by `Tacho` objects. See `Tacho.h`.
+
+### Configuring Stealthchop, Stallguard and Coolstep
+
+This is described in detail in the data sheet, p38, p59 and p60. There are flow charts too. 
 
 
 <!-- ========================================================================================== -->
@@ -288,7 +292,7 @@ The MCU's TX is effectively looped back to the RX pin via the 1K resistor, so th
 
 It is easy to address more than four TMC chips. The data sheet (p21) recommends an "analog switch" 74HC4066 to select individual chips with individual "chip select" outputs. That allows MC0/MC1 to be used for microstep selection, but it uses one additional output per chip which is not very efficient.
 
-A better way is to use a single output to control a 1-pole 2-way (single pole double throw SPDT) analog switch to select a bank of four TMC chips. Bank0 = 0..3 and Bank1 = 4..7, so node addresses 0..3 can be used for both banks of four chips. This can be done with a cheap DG41xx analog multiplexer chip (Vishay or Maxim), or even an old CD4016, CD4051, CD4053 etc.
+A better way is to use a single output to control a single-pole-double-throw (SPDT) analog switch to select a bank of four TMC chips. Bank0 = 0..3 and Bank1 = 4..7, so node addresses 0..3 can be used for both banks of four chips. This can be done with a cheap DG41xx analog multiplexer chip (Vishay or Maxim), or even an old CD4016, CD4051, CD4053 etc.
 
 ![TMC Multiplexer](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/tmc-multiplexer.png)
 
@@ -328,7 +332,7 @@ The motor power VM is supplied by an external 12V or 24V power supply (1A per mo
 <!-- ========================================================================================== -->
 
 <a name="silent-running"></a>
-## Silent Running
+## Silent Running, p65
 
 "Silent Running" was a brilliant 1972 science fiction movie starring Bruce Dern (https://en.wikipedia.org/wiki/Silent_Running). But that's not what this refers to, because they didn't use TRINAMIC chips in those days. Or maybe they did, that's why the robots were so quiet.
 
@@ -517,9 +521,9 @@ https://www.faulhaber.com/en/know-how/application-notes
 <a name="revision-history"></a>
 # Revision History
 
-| Date       | Version  | Description |
+| Date       | Version  | Details |
 |:---------- |:---------|:----------- |
-| 2026.04.14 | 1.0.0	| The first version! |
+| 2026.04.14 | 1.0.0	| The first official version |
 
 <br/>
 
