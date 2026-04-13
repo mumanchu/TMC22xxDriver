@@ -279,9 +279,7 @@ void loop()
 
 		// velocity control
 		long vactual = tmcDriver.rpsToVACTUAL(rotationsPerSecond);
-		if (direction)
-			vactual = -vactual;
-		tmcDriver.velocityMoveStart(vactual);
+		tmcDriver.velocityMoveStart(direction ? vactual : -vactual);
 	}
 }
 
