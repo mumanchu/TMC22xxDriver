@@ -163,6 +163,8 @@ _See the comments in the source code for details of the other methods. There are
 <a name="example-sketch"></a>
 ## Example Sketch
 
+See [tmc2209-test.ino](https://github.com/mumanchu/TMC22xxDriver/blob/main/examples/tmc2209-test/tmc2209-test.ino).
+
 To use the example sketch you will need to build a circuit similar to the [Prototype Shield](#prototype-shield), which connects the TMC22xx module to the MCU's I/Os. Or if you are running it on an existing 3D printer board, get the `pins_xxx.h` file from the relevant Marlin github repository to find the UART and STEP/DIR pins for the board.
 
 The example sketch is quite big and may look confusing at first. It illustrates several things:
