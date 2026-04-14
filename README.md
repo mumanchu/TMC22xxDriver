@@ -316,7 +316,7 @@ For validating the motor movement, a disc encoder with 20 slots was fitted to th
 
 ![Tachometer](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/tmc-tachometer.png)
 
-The INDEX and TACHO inputs generate iterrupts which are handled by the `Tacho` class in the [Example Sketch](*example-sketch), see `Tacho.h`.
+The INDEX and TACHO inputs generate interrupts which are handled by the `Tacho` class in the [Example Sketch](*example-sketch), see `Tacho.h`.
 
 The I/O pins (i.e. STEP/DIR/EN and UART) can be driven by 3.3V or 5V MCUs, the VIO (or VCC_IO) power pin is used for these. 
 
@@ -389,7 +389,7 @@ The TMC chips use the traditional STEP, DIR and EN stepper motor control signals
 
 The code to do the STEP/DIR control has been put into a separate `MiniStepper` library. This is because the `MiniStepper` library can be used with _any_ motor controller chip, not just the intelligent TMC22xx chips. `MiniStepper` is a 'non-blocking' library that uses a single hardware timer, has S-curve acceleration/deceleration, and controls up to 4 motors simultaneously.
 
-The `MiniStepper` library will be released soon, but until then you can use any of the other stepper libraries. Note that some 'non blocking' stepper motor libraries rely on a call from `loop()`, so the motor stops or slws down while the loop is doing something else. You won't have this problem with `MiniStepper` because all movements are controlled by the timer interrupt.
+The `MiniStepper` library will be released soon, but until then you can use any of the other stepper libraries. Note that some 'non blocking' stepper motor libraries rely on a call from `loop()`, so the motor stops or slows down while the loop is doing something else. You won't have this problem with `MiniStepper` because all movements are controlled by the timer interrupt.
 
 
 <!-- ========================================================================================== -->
@@ -449,7 +449,7 @@ It's a good idea to check for errors regularly at runtime, so the movement can b
 <a name="stall-detection"></a>
 ## Stall Detection: Does it work? p58
 
-The TMC chips measure the current through the motor's coils. This can be used to detect if the motor has "stalled". For example, if it has hit the end-stop or your tie has caught in the pulley wheel and you are being strangled ;-)
+The TMC chips measure the current through the motor's coils. This can be used to detect if the motor has "stalled". For example, if it has hit the end-stop, or your tie has caught in the pulley wheel and you are being strangled ;-)
 
 In theory, you can use 'stall detection' instead of having end-stop switches. But at low speeds it does not work. On p28, the data sheet states, _"DIAG is pulsed by StallGuard when SG_RESULT falls below SGTHRS. It is only enabled in StealthChop mode, and when `TCOOLTHRS >= TSTEP > TPWMTHRS`"_. This means that stall detection is disabled at slow speeds when `TSTEP > TCOOLTHRS`, which happens when the motor is turning slowly.
 
@@ -512,7 +512,7 @@ https://www.analog.com/media/en/engineering-tools/design-tools/tmc2209_calculati
 
 **Dr. Fritz's great introduction to microstepping** \
 https://www.faulhaber.com/fileadmin/Import/Media/AN015_EN.pdf \
-and much more good stuff too... \
+and much more good stuff about stepper motors too... \
 https://www.faulhaber.com/en/know-how/application-notes
 
 
@@ -527,7 +527,9 @@ https://www.faulhaber.com/en/know-how/application-notes
 
 <br/>
 
-**Joke of the Week** \
+
+## Joke of the Week
+
 _What's the difference between hardware and software?_ \
-_Hardware is all the bits you can hit with a hammer._
+_Hardware is all the parts you can hit with a hammer._
 
