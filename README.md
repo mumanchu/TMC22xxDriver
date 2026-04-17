@@ -1,12 +1,12 @@
-﻿# TMC22xxDriver Library, from $${\color{green}mumanchu}$$
+# TMC22xxDriver Library, from $${\color{green}mumanchu}$$
 
 There are already _many_ TMC2209 libraries out there. So just to confuse you, here is another one.
 
 This library is for configuring and monitoring the TRINAMIC TMC22xx range of intelligent Stepper Motor Controller chips via the single-wire UART interface. This includes the TMC2202/2208/2209 and TMC2224/2225/2226. It runs on all STM32, SAMD, AVR, ESP32 and ESP8266 microcontrollers, but 32-bit MCUs are recommended.
 
-It can be used with stand-alone [TMC22xx modules](#tmc22xx-modules), or with old (or new) 3D printer main boards which can be re-programmed via an ICSP, SWD or JTAG connector.
+It can be used with stand-alone [TMC22xx modules](#tmc22xx-modules), or with old (or new) 3D printer main boards which can be re-programmed via an ICSP (In-Circuit Serial Programing), SWD (Serial Wire Debug) or JTAG (Joint Test Action Group) connector.
 
-The library does not do the STEP/DIR control. That is done by a separate STEP/DIR library called `MiniStepper`, to be released soon. (`MiniStepper` works together with this library or as a stand-alone library for controlling all standard motor controller chips via the STEP/DIR/EN pins. It is a non-blocking library which also provides S-Curve acceleration/deceleration.)
+The library does not do the STEP/DIR control. That is done by a separate STEP/DIR library called `MiniStepper`, to be released soon. (`MiniStepper` works together with this library or as a stand-alone library for controlling all standard motor controller chips via the STEP/DIR/EN pins. It is a non-blocking timer-driven library which provides S-Curve acceleration/deceleration.)
 
 ![TMC2209 Module](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/tmc2209-module.jpg)  ![Bigtreetech Board](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/bigtreetech-skr-mini-e3.jpg)
 
@@ -54,7 +54,7 @@ The TMC2202/8/9 and TMC2224/5/6 are all the same apart from the packaging, pinou
 I have several 3D printer controller boards that use TRINAMIC chips, and they _all_ use the TMC2209. I've not seen a board that uses the other versions. Some stand-alone controller modules which the other chips are advertised, but does anybody buy them?
 
 > **DREAM ON** \
-> One day, a new generation of TMC chips might handle the acceleration/deceleration curves internally, so you select the curve (Trapezoidal or S-Curve) and the acceleration, and write the number of steps into a register. The chip then manages the movement itself, signalling when the movement is complete. Then you won't need the `MiniStepper` library.
+> One day, a new generation of TMC chips might handle the acceleration/deceleration curves internally, so you select the curve (Trapezoidal or S-Curve) and the acceleration, and write the number of steps into a register. The chip then manages the movement itself, signalling when the movement is complete. Then you won't need the `MiniStepper` library!
 
 
 <!-- ========================================================================================== -->
@@ -62,7 +62,7 @@ I have several 3D printer controller boards that use TRINAMIC chips, and they _a
 <a name="advantages"></a>
 ## Advantages of This Library 
 
-This library is part of a "Stepper Motor Control Suit" which is being released in stages. `MultiTimerSAMD` and `OptimizedGPIO` are already available. Next will be the `MiniStepper` library for STEP/DIR control (but until then you can use any of the many Arduino STEP/DIR libraries).
+This library is part of a "Stepper Motor Control Suite" which is being released in stages. `MultiTimerSAMD` and `OptimizedGPIO` are already available. Next will be the `MiniStepper` library for STEP/DIR control (but until then you can use any of the many Arduino STEP/DIR libraries).
 
 In addition:
 - This library supports _all_ the TRINAMIC chip's features.
@@ -206,6 +206,8 @@ The contents of the TMC22xx chip's registers are defined with `struct` and `unio
  
 To save reading a register before modifying it, the library uses _shadow registers_ to hold the value last written to certain registers. This is managed automatically by code in `setRegister()`.
 
+`SoftwareSerial` cannot be used with because timer interrupts affect SoftwareSerial's timing loops.
+
 For the STM32, assembly language instructions `__asm__` are used to speed up CRC calculation and byte reversal in `crc8()` and `reverse4bytes()`. If not using an STM32, then normal C code is used. (But this will be extended to other MCUs in a future release.)
 
 If `DEBUG` is defined, the code does additional checks to ensure read-only registers are not written to and write-only registers are not read. It can also verify writes to readable registers by doing a write-read-and-compare, but only if the chip's TX pin is connected. This detects a lot of mistakes if you are making changes to the library.
@@ -320,7 +322,7 @@ The INDEX and TACHO inputs generate interrupts which are handled by the `Tacho` 
 
 The I/O pins (i.e. STEP/DIR/EN and UART) can be driven by 3.3V or 5V MCUs, the VIO (or VCC_IO) power pin is used for these. 
 
-The motor power VM is supplied by an external 12V or 24V power supply (1A per motor). VM also supplies the internal logic via the TMC chip's internal 5V regulator. UART communications will not work without it.
+The motor power VM is supplied by an external 12V or 24V power supply (1A + 1A per motor). VM also supplies the internal logic via the TMC chip's internal 5V regulator. UART communications will not work without it.
 
 ![Prototype Shield Photo](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/prototype-shield.jpg)
 
