@@ -318,7 +318,7 @@ For validating the motor movement, a disc encoder with 20 slots was fitted to th
 
 ![Tachometer](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/tmc-tachometer.png)
 
-The INDEX and TACHO inputs generate interrupts which are handled by the `Tacho` class in the [Example Sketch](*example-sketch), see `Tacho.h`.
+The INDEX and TACHO inputs generate interrupts which are handled by the `Tacho` class in the [Example Sketch](#example-sketch), see `Tacho.h`.
 
 The I/O pins (i.e. STEP/DIR/EN and UART) can be driven by 3.3V or 5V MCUs, the VIO (or VCC_IO) power pin is used for these. 
 
