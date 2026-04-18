@@ -206,8 +206,6 @@ The contents of the TMC22xx chip's registers are defined with `struct` and `unio
  
 To save reading a register before modifying it, the library uses _shadow registers_ to hold the value last written to certain registers. This is managed automatically by code in `setRegister()`.
 
-`SoftwareSerial` cannot be used with because timer interrupts affect SoftwareSerial's timing loops.
-
 For the STM32, assembly language instructions `__asm__` are used to speed up CRC calculation and byte reversal in `crc8()` and `reverse4bytes()`. If not using an STM32, then normal C code is used. (But this will be extended to other MCUs in a future release.)
 
 If `DEBUG` is defined, the code does additional checks to ensure read-only registers are not written to and write-only registers are not read. It can also verify writes to readable registers by doing a write-read-and-compare, but only if the chip's TX pin is connected. This detects a lot of mistakes if you are making changes to the library.
