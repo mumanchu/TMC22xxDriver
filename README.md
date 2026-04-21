@@ -54,7 +54,8 @@ The TMC2202/8/9 and TMC2224/5/6 are all the same apart from the packaging, pinou
 I have several 3D printer controller boards that use TRINAMIC chips, and they _all_ use the TMC2209. I've not seen a board that uses the other versions. Some stand-alone controller modules which the other chips are advertised, but does anybody buy them?
 
 > **DREAM ON** \
-> One day, a new generation of TMC chips might handle the acceleration/deceleration curves internally, so you select the curve (Trapezoidal or S-Curve) and the acceleration, and write the number of steps into a register. The chip then manages the movement itself, signalling when the movement is complete. Then you won't need the `MiniStepper` library!
+> One day, a new generation of TMC chips might handle the acceleration/deceleration curves internally, so you select the curve (Trapezoidal or S-Curve) and the acceleration, and write the number of steps into a register. The chip then manages the movement itself, signalling when the movement is complete. Then you won't need the `MiniStepper` library! \
+> _\<this is already available, it's called the TMC429 - ed\>_
 
 
 <!-- ========================================================================================== -->
