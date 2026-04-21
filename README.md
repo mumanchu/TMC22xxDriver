@@ -1,4 +1,4 @@
-# TMC22xxDriver Library, from $${\color{green}mumanchu}$$
+﻿# TMC22xxDriver Library, from $${\color{green}mumanchu}$$
 
 There are already _many_ TMC2209 libraries out there. So just to confuse you, here is another one.
 
@@ -6,7 +6,7 @@ This library is for configuring and monitoring the TRINAMIC TMC22xx range of int
 
 It can be used with stand-alone [TMC22xx modules](#tmc22xx-modules), or with old (or new) 3D printer main boards which can be re-programmed via an ICSP (In-Circuit Serial Programing), SWD (Serial Wire Debug) or JTAG (Joint Test Action Group) connector.
 
-The library does not do the STEP/DIR control. That is done by a separate STEP/DIR library called `MiniStepper`, to be released soon. (`MiniStepper` works together with this library or as a stand-alone library for controlling all standard motor controller chips via the STEP/DIR/EN pins. It is a non-blocking timer-driven library which provides S-Curve acceleration/deceleration.)
+The library does not do the STEP/DIR control. That is done by a separate STEP/DIR library called `MiniStepper`, to be released soon. (`MiniStepper` works together with this library, or as a stand-alone library, for controlling all standard motor controller chips via the STEP/DIR/EN pins. It is a non-blocking timer-driven library which provides S-Curve acceleration/deceleration.)
 
 ![TMC2209 Module](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/tmc2209-module.jpg)  ![Bigtreetech Board](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/bigtreetech-skr-mini-e3.jpg)
 
@@ -156,7 +156,7 @@ Once the serial port has been opened, call this from `setup()` to initialize the
 **`virtual bool setConfiguration();`** \
 This function is called to configure the TMC chip's registers. You can either edit the library code for your desired configuration, or override it in a derived class as shown in the [Example Sketch](#example-sketch). You would normally use the same configuration for each stepper motor. It's a good idea not to rely on the "power up reset" default values, because the chip may not always be reset - it has no RESET pin!
 
-_See the comments in the source code for details of the other methods. There are also data sheet page references to help, e.g. "p12"._
+_See the comments in the source code for details of the other methods.
 
 
 <!-- ========================================================================================== -->
@@ -275,11 +275,12 @@ https://www.st.com/en/evaluation-tools/nucleo-f446re.html \
 
 The TMC22xx chips have a dual-purpose pin called PDN_UART. This can either work as a power-down input (for standstill current reduction) or as a fast serial TX/RX port for intelligent control. The mode selection is done via the `pdn_disable` bit in the `GCONF` configuration register. See the library's `setConfiguration()` method.
 
-The UART pin is normally an RX input, listening for messages. When it receives a message with the chip's "node address" (0..3, as defined by the AD0/AD1 pins), it becomes a TX output and sends a response, then switches back to RX mode. The chip automatically adjusts to the baud rate of the incomming message, 9600..500'000 baud. Recommended is around 256'000 baud - it does not need to be super fast.
-
-All messages have a 1-byte polynomial CRC which is used to validate each message.
-
 Up to 4 motors can be connected, sharing the same TX and RX lines. Each message sent by the MCU contains a "node address" 0..3. All chips listen to the messages sent by the MCU, but only the addressed chip will respond. On 3D printer boards, each TMC2208 chip has the address hard-wired on the board. The AD0/AD1 pins can also be used as MS0/MS1 to select the microsteps, but because UART programming is used, the microsteps are progammed via the `CHOPCONF` register's `MRES` bits.
+
+The chip automatically adjusts to the baud rate of the incomming message, 9600 .. 500'000 baud. Recommended is 256'000 or 384'000 baud, it does not need to be super fast.
+
+All messages have a 1-byte polynomial CRC for validating each message.
+
 
 There is only one pin for both TX and RX, so it's necessary to use an external 1K ohm resistor to prevent conflicts between the MCU's TX driver and the TMC chip's UART outputs. Some of the stand-alone driver boards have this resistor already fitted. If not, you must add it to your circuit.
 
@@ -312,7 +313,7 @@ For library development, a prototype shield was designed that works with the Ard
 3. Use 5V for a 5V MCU, or 3.3V for a 3.3V MCU, else "BANG!". See Disclaimer. 3.3V usually works for 5V MCUs, but not the other way round!
 4. The ZERO does not support interrupts on pin D4. So use D10 instead for INDEX or DIAG (see note 1).
 
-For validating the motor movement, a disc encoder with 20 slots was fitted to the motor's spindle. This is read using an "opto interrupter" (like the ITR9606 or ITR9608) to provide 20 pulses-per-revolution into the TACHO (tachometer) input.
+For validating the motor movement, a disc encoder with 20 slots was fitted to the motor's spindle. This is read using an "opto interrupter" (like the ITR9606 or ITR9608) to provide 20 pulses-per-revolution into the TACHO (tachometer) input. Opto interrupters do not need debouncing.
 
 ![Tachometer](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/tmc-tachometer.png)
 
@@ -361,7 +362,7 @@ This library does not control the motor with the STEP/DIR pins, but it _can_ use
 
 The velocity is set by the VACTUAL register. The VACTUAL value is in _microsteps per time interval 't'_, where 't' is (fclk / 2^24). The `xxxToVACTUAL()` methods can be used to get the `vactual` value of a speed in revolutions-per-minute, revolutions-per-second or fullsteps-per-second. There is also an Analog Devices spreadsheet for this, see the link at the end of the page.
 
-To control thw direction, a +ve `vactual` value rotates one way and a -ve `vactual` rotates the other way. 
+To control the direction, a +ve `vactual` value rotates one way and a -ve `vactual` rotates the other way. 
 
 The chip does not do any acceleration or deceleration, so you must do that in software. The data sheet says, _"Motion at higher velocities will require ramping up and ramping down the velocity value by software."_ It's true. If you try to start the motor at a speed above its starting speed, it will not move, and sits there making very strange noises. But it works pefectly if you ramp up the speed slowly.
 
@@ -528,7 +529,7 @@ https://www.faulhaber.com/en/know-how/application-notes
 <br/>
 
 
-## Joke of the Week
+# Joke of the Week
 
 _What's the difference between hardware and software?_ \
 _Hardware is all the parts you can hit with a hammer._
