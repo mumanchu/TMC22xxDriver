@@ -2,7 +2,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // TMC22xx Stepper Motor Controller Library
-// Copyright (C) muman.ch, 2026.03.07
+// Copyright (C) muman.ch, 2026.04.22
 // info@muman.ch
 /*
 For full details see github
@@ -1403,7 +1403,7 @@ byte TMC22xxDriver::crc8(const byte* msg, uint length)
 	while (length--)
 		result = crcTable[result ^ *msg++];
 
-	#ifdef STM32_CORE_VERSION
+	#if defined(__ARM_ARCH) && (__ARM_ARCH >= 7)
 	// reverse the bits with RBIT instruction
 	uint reversed;
 	__asm__("rbit %0, %1" : "=r"(reversed) : "r"(result));
@@ -1467,7 +1467,7 @@ byte TMC22xxDriver::crc8(const byte* msg, uint length)
 // Convert 32-bit little startian to little endian, or back again
 uint32_t TMC22xxDriver::reverse4Bytes(const byte* data)
 {
-	#ifdef STM32_CORE_VERSION
+	#if defined(__ARM_ARCH) && (__ARM_ARCH >= 6)
 	uint32_t v = *(uint32_t*)data;
 	__asm__("rev %0, %1" : "=r"(v) : "r"(v));
 	return v;
