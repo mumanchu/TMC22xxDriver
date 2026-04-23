@@ -2,7 +2,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // TMC22xx Stepper Motor Controller Library
-// Copyright (C) muman.ch, 2026.04.22
+// Copyright (C) muman.ch, 2026.03.07
 // info@muman.ch
 /*
 For full details see github
@@ -481,7 +481,6 @@ protected:
 	float calculateIrms(uint CS, float Vfs, float rsense);
 	byte crc8(const byte* msg, uint length);
 	static const byte crcTable[256];
-	uint32_t reverse4Bytes(const byte* data);
 };
 
 
@@ -1390,8 +1389,13 @@ bool TMC22xxDriver::getRegister(uint reg, uint32_t* data)
 		return false;
 	}
 
-	// return the 32-bit value
-	*data = reverse4Bytes(rxmsg + 3);
+	// reverse 4 bytes and return the 32-bit value
+	byte* p1 = rxmsg + 3;
+	byte* p2 = ((byte*)data) + 3;
+	*p2-- = *p1++;
+	*p2-- = *p1++;
+	*p2-- = *p1++;
+	*p2 = *p1;
 
 	return true;
 }
@@ -1399,30 +1403,22 @@ bool TMC22xxDriver::getRegister(uint reg, uint32_t* data)
 // Fast CRC8 using look-up table
 byte TMC22xxDriver::crc8(const byte* msg, uint length)
 {
-	uint result = 0;
+	uint crc = 0;
 	while (length--)
-		result = crcTable[result ^ *msg++];
+		crc = crcTable[crc ^ *msg++];
 
-	#if defined(__ARM_ARCH) && (__ARM_ARCH >= 7)
-	// reverse the bits with RBIT instruction
-	uint reversed;
-	__asm__("rbit %0, %1" : "=r"(reversed) : "r"(result));
-	return ((byte*)&reversed)[3];
-
-	#else
-	// reverse the bits with C code
+	// reverse lower 8 bits of the crc
 	uint reversed = 0;
 	uint mask1 = 0x01;
 	uint mask2 = 0x80;
 	while (1) {
-		if (result & mask1)
+		if (crc & mask1)
 			reversed |= mask2;
-		if ((mask1 <<= 1) == 0)
+		mask1 <<= 1;
+		if ((mask2 >>= 1) == 0)
 			break;
-		mask2 >>= 1;
 	}
 	return (byte)reversed;
-	#endif
 }
 
 const byte TMC22xxDriver::crcTable[256] =
@@ -1463,21 +1459,4 @@ byte TMC22xxDriver::crc8(const byte* msg, uint length)
 	return crc;
 }
 #endif
-
-// Convert 32-bit little startian to little endian, or back again
-uint32_t TMC22xxDriver::reverse4Bytes(const byte* data)
-{
-	#if defined(__ARM_ARCH) && (__ARM_ARCH >= 6)
-	uint32_t v = *(uint32_t*)data;
-	__asm__("rev %0, %1" : "=r"(v) : "r"(v));
-	return v;
-
-	#else 
-	uint32_t v;
-	byte* pv = ((byte*)&v) + 3;
-	for (int i = 0; i < 4; ++i)
-		*pv-- = *data++;
-	return v;
-	#endif
-}
 
