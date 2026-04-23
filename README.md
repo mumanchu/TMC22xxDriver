@@ -55,7 +55,7 @@ I have several 3D printer controller boards that use TRINAMIC chips, and they _a
 
 > **DREAM ON** \
 > One day, a new generation of TMC chips might handle the acceleration/deceleration curves internally, so you select the curve (Trapezoidal or S-Curve) and the acceleration, and write the number of steps into a register. The chip then manages the movement itself, signalling when the movement is complete. Then you won't need the `MiniStepper` library! \
-> \<this is already available, it's called the TMC429 - ed\>
+> _\<this is already available, it's called the TMC429 - ed\>_
 
 
 <!-- ========================================================================================== -->
