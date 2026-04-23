@@ -55,7 +55,7 @@ I have several 3D printer controller boards that use TRINAMIC chips, and they _a
 
 > **DREAM ON** \
 > One day, a new generation of TMC chips might handle the acceleration/deceleration curves internally, so you select the curve (Trapezoidal or S-Curve) and the acceleration, and write the number of steps into a register. The chip then manages the movement itself, signalling when the movement is complete. Then you won't need the `MiniStepper` library! \
-> _\<this is already available, it's called the TMC429 - ed\>_
+> \<this is already available, it's called the TMC429 - ed\>
 
 
 <!-- ========================================================================================== -->
@@ -206,8 +206,6 @@ For a bit of variety, 'get' and 'set' are used instead of 'read' and 'write', e.
 The contents of the TMC22xx chip's registers are defined with `struct` and `union`, which gives names to each bit or group of bits. Each register can be handled either as a 32-bit value `data` or as individual items. The code uses the same names as the data sheet, except lower case for data, and all upper case for register names (the data sheet is inconsistent). Refer to the data sheet for descriptions of the registers and data. A data sheet page number, e.g. p12, is given for each register. 
  
 To save reading a register before modifying it, the library uses _shadow registers_ to hold the value last written to certain registers. This is managed automatically by code in `setRegister()`.
-
-For the STM32, assembly language instructions `__asm__` are used to speed up CRC calculation and byte reversal in `crc8()` and `reverse4bytes()`. If not using an STM32, then normal C code is used. (But this will be extended to other MCUs in a future release.)
 
 If `DEBUG` is defined, the code does additional checks to ensure read-only registers are not written to and write-only registers are not read. It can also verify writes to readable registers by doing a write-read-and-compare, but only if the chip's TX pin is connected. This detects a lot of mistakes if you are making changes to the library.
 
