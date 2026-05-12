@@ -261,7 +261,7 @@ https://github.com/bigtreetech/BIGTREETECH-SKR-mini-E3 \
 
 ### Nucleo-64 STM32F446RE
 
-The best MCU boards are the Nucleo-64 STM32 evaluation boards, like the STM32F446RE. These have the standard set of Arduino connectors, plus over 100 additional I/O pins! The STM32F446RE board runs at 180MHz, has 512KB Flash, 128KB RAM, floating point uint (FPU) and _fantastic_ built-in ST-LINK debugging. It costs less than $20! These are _great_ for debugging. But they have no onboard sensors, EEPROM, SD card, high-power outputs, etc. 
+The best MCU boards are the Nucleo-64 STM32 evaluation boards, like the STM32F446RE. These have the standard set of Arduino connectors, plus over 100 additional I/O pins! The STM32F446RE board runs at 180MHz, has 512KB Flash, 128KB RAM, floating point unit (FPU) and _fantastic_ built-in ST-LINK debugging. It costs less than $20! These are _great_ for debugging. But they have no onboard sensors, EEPROM, SD card, high-power outputs, etc. 
 
 https://www.st.com/en/evaluation-tools/nucleo-f446re.html \
 ![Nucleo-64 STM32F446RE](https://github.com/mumanchu/mumanchu/blob/main/assets/tmc22xxdriver/nucleo-64-stm32f446re.jpg)
