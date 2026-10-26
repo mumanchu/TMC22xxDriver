@@ -157,7 +157,7 @@ Once the serial port has been opened, call this from `setup()` to initialize the
 **`virtual bool setConfiguration();`** \
 This function is called to configure the TMC chip's registers. You can either edit the library code for your desired configuration, or override it in a derived class as shown in the [Example Sketch](#example-sketch). You would normally use the same configuration for each stepper motor. It's a good idea not to rely on the "power up reset" default values, because the chip may not always be reset - it has no RESET pin!
 
-_See the comments in the source code for details of the other methods.
+_See the comments in the source code for details of the other methods._
 
 
 <!-- ========================================================================================== -->
@@ -524,7 +524,7 @@ https://www.faulhaber.com/en/know-how/application-notes
 | Date       | Version  | Details |
 |:---------- |:---------|:----------- |
 | 2026.04.14 | 1.0.0	| The first official version |
-| 2026.05.12 | 1.0.2    | Remove asm code, not all instructions are suported by all thumb versions |
+| 2026.05.12 | 1.0.2    | Remove asm code, not all instructions are supported by all thumb versions |
 
 <br/>
 
