@@ -1,4 +1,4 @@
-﻿# TMC22xxDriver Library, from $${\color{green}mumanchu}$$
+﻿# TMC22xxDriver Library, from _mumanchu_
 
 There are already _many_ TMC2209 libraries out there. So just to confuse you, here is another one.
 
