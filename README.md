@@ -523,8 +523,8 @@ https://www.faulhaber.com/en/know-how/application-notes
 
 | Date       | Version  | Details |
 |:---------- |:---------|:----------- |
-| 2026.04.14 | 1.0.0	| The first official version |
 | 2026.05.12 | 1.0.2    | Remove asm code, not all instructions are supported by all thumb versions |
+| 2026.04.14 | 1.0.0	| The first official version |
 
 <br/>
 
